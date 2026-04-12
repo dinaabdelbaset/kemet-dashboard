@@ -15,7 +15,7 @@ export default function DashboardPage() {
     <div>
       <h2 className="text-3xl font-bold mb-8 text-slate-800">Dashboard Overview</h2>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
          <div className="bg-white p-6 rounded-xl shadow-sm flex items-center justify-between border border-slate-100">
             <div>
                <p className="text-sm text-slate-500 font-medium uppercase mb-1">Total Users</p>
@@ -42,10 +42,19 @@ export default function DashboardPage() {
 
          <div className="bg-white p-6 rounded-xl shadow-sm flex items-center justify-between border border-slate-100">
             <div>
-               <p className="text-sm text-slate-500 font-medium uppercase mb-1">Total Revenue</p>
+               <p className="text-sm text-slate-500 font-medium uppercase mb-1">Gross Revenue (Hotels/Tours)</p>
                <h3 className="text-3xl font-bold text-slate-800">{stats.revenue || 0} EGP</h3>
             </div>
-            <div className="bg-green-50 p-4 rounded-lg text-green-500"><DollarSign size={28} /></div>
+            <div className="bg-slate-50 p-4 rounded-lg text-slate-500"><DollarSign size={28} /></div>
+         </div>
+
+         <div className="bg-white p-6 rounded-xl shadow-sm flex items-center justify-between border-2 border-green-100">
+            <div>
+               <p className="text-sm text-green-600 font-bold uppercase mb-1">Your Net Profit (Kemet)</p>
+               <h3 className="text-3xl font-black text-green-600">{stats.profit || 0} EGP</h3>
+               <p className="text-xs text-slate-400 mt-1">Based on {stats.commission_rate || '15%'} platform commission</p>
+            </div>
+            <div className="bg-green-100 p-4 rounded-lg text-green-600"><DollarSign size={28} /></div>
          </div>
       </div>
     </div>
