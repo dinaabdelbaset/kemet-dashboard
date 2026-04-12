@@ -72,7 +72,7 @@ export default function TransportationsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
          {transportations.map(transportation => (
             <div key={transportation.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group">
-               <img src={transportation.image || 'https://via.placeholder.com/400'} alt={transportation.title || transportation.name} className="w-full h-48 object-cover" />
+               <img src={transportation.image ? (transportation.image.startsWith('/') ? 'http://127.0.0.1:8000' + transportation.image : transportation.image) : 'https://via.placeholder.com/400'} alt={transportation.title || transportation.name} className="w-full h-48 object-cover" />
                <div className="p-5 flex-1 flex flex-col">
                   <h3 className="font-bold text-lg text-slate-800 mb-1">{transportation.title || transportation.name}</h3>
                   <p className="text-slate-500 text-sm mb-2 line-clamp-2" title={transportation.location}>{transportation.location}</p>

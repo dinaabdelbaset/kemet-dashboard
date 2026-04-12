@@ -72,7 +72,7 @@ export default function OffersPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
          {deals.map(offer => (
             <div key={offer.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group">
-               <img src={offer.image || 'https://via.placeholder.com/400'} alt={offer.title || offer.name || offer.user_name} className="w-full h-48 object-cover" />
+               <img src={offer.image ? (offer.image.startsWith('/') ? 'http://127.0.0.1:8000' + offer.image : offer.image) : 'https://via.placeholder.com/400'} alt={offer.title || offer.name || offer.user_name} className="w-full h-48 object-cover" />
                <div className="p-5 flex-1 flex flex-col">
                   <h3 className="font-bold text-lg text-slate-800 mb-1">{offer.title || offer.name || offer.user_name}</h3>
                   <p className="text-slate-500 text-sm mb-2 line-clamp-2" title={offer.location}>{offer.location}</p>

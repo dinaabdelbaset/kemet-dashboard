@@ -72,7 +72,7 @@ export default function ReviewsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
          {reviews.map(review => (
             <div key={review.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group">
-               <img src={review.image || 'https://via.placeholder.com/400'} alt={review.title || review.name || review.user_name} className="w-full h-48 object-cover" />
+               <img src={review.image ? (review.image.startsWith('/') ? 'http://127.0.0.1:8000' + review.image : review.image) : 'https://via.placeholder.com/400'} alt={review.title || review.name || review.user_name} className="w-full h-48 object-cover" />
                <div className="p-5 flex-1 flex flex-col">
                   <h3 className="font-bold text-lg text-slate-800 mb-1">{review.title || review.name || review.user_name}</h3>
                   <p className="text-slate-500 text-sm mb-2 line-clamp-2" title={review.location}>{review.location}</p>

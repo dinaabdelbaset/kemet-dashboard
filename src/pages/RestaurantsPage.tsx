@@ -72,7 +72,7 @@ export default function RestaurantsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
          {restaurants.map(restaurant => (
             <div key={restaurant.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group">
-               <img src={restaurant.image || 'https://via.placeholder.com/400'} alt={restaurant.title || restaurant.name} className="w-full h-48 object-cover" />
+               <img src={restaurant.image ? (restaurant.image.startsWith('/') ? 'http://127.0.0.1:8000' + restaurant.image : restaurant.image) : 'https://via.placeholder.com/400'} alt={restaurant.title || restaurant.name} className="w-full h-48 object-cover" />
                <div className="p-5 flex-1 flex flex-col">
                   <h3 className="font-bold text-lg text-slate-800 mb-1">{restaurant.title || restaurant.name}</h3>
                   <p className="text-slate-500 text-sm mb-2 line-clamp-2" title={restaurant.location}>{restaurant.location}</p>

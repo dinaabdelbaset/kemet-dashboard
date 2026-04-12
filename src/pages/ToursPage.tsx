@@ -72,7 +72,7 @@ export default function ToursPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
          {tours.map(tour => (
             <div key={tour.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group">
-               <img src={tour.image || 'https://via.placeholder.com/400'} alt={tour.title} className="w-full h-48 object-cover" />
+               <img src={tour.image ? (tour.image.startsWith('/') ? 'http://127.0.0.1:8000' + tour.image : tour.image) : 'https://via.placeholder.com/400'} alt={tour.title} className="w-full h-48 object-cover" />
                <div className="p-5 flex-1 flex flex-col">
                   <h3 className="font-bold text-lg text-slate-800 mb-1">{tour.title}</h3>
                   <p className="text-slate-500 text-sm mb-2 line-clamp-2" title={tour.location}>{tour.location}</p>
