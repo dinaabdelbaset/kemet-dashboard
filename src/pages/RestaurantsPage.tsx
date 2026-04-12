@@ -6,7 +6,7 @@ export default function RestaurantsPage() {
   const [restaurants, setRestaurants] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({ id: null, title: "", location: "", price: "", duration: "", image: "" });
+  const [formData, setFormData] = useState({ id: null, name: "", location: "", price: "", cuisine: "", rating: "", image: "" });
 
   const fetchRestaurants = () => {
     axiosClient.get("/admin/restaurants").then((res) => setRestaurants(res.data));
@@ -18,7 +18,7 @@ export default function RestaurantsPage() {
 
   const openAddModal = () => {
     setIsEditing(false);
-    setFormData({ id: null, title: "", location: "", price: "", duration: "", image: "" });
+    setFormData({ id: null, name: "", location: "", price: "", cuisine: "", rating: "", image: "" });
     setIsModalOpen(true);
   };
 
@@ -26,10 +26,11 @@ export default function RestaurantsPage() {
     setIsEditing(true);
     setFormData({ 
       id: restaurant.id, 
-      title: restaurant.title || restaurant.name, 
+      name: restaurant.name, 
       location: restaurant.location, 
-      price: restaurant.price, 
-      duration: restaurant.duration || "",
+      price: restaurant.price || 0, 
+      cuisine: restaurant.cuisine || "",
+      rating: restaurant.rating || "",
       image: restaurant.image 
     });
     setIsModalOpen(true);
@@ -72,16 +73,23 @@ export default function RestaurantsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
          {restaurants.map(restaurant => (
             <div key={restaurant.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group">
-               <img src={restaurant.image ? (restaurant.image.startsWith('/') ? 'http://127.0.0.1:8000' + restaurant.image : restaurant.image) : 'https://via.placeholder.com/400'} alt={restaurant.title || restaurant.name} className="w-full h-48 object-cover" />
+               <img src={restaurant.image ? (restaurant.image.startsWith('/') ? 'http://localhost:5173' + restaurant.image : restaurant.image) : 'https://via.placeholder.com/400'} alt={restaurant.name} className="w-full h-48 object-cover" />
                <div className="p-5 flex-1 flex flex-col">
-                  <h3 className="font-bold text-lg text-slate-800 mb-1">{restaurant.title || restaurant.name}</h3>
+                  <h3 className="font-bold text-lg text-slate-800 mb-1">{restaurant.name}</h3>
                   <p className="text-slate-500 text-sm mb-2 line-clamp-2" title={restaurant.location}>{restaurant.location}</p>
                   
-                  {restaurant.duration && (
-                     <span className="inline-block px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-md mb-4 self-start">
-                        {restaurant.duration}
-                     </span>
-                  )}
+                  <div className="flex items-center gap-2 mb-4">
+                     {restaurant.cuisine && (
+                        <span className="inline-block px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-md">
+                           🍽️ {restaurant.cuisine}
+                        </span>
+                     )}
+                     {restaurant.rating && (
+                        <span className="inline-block px-2 py-1 bg-amber-50 text-amber-600 text-xs font-bold rounded-md">
+                           ★ {restaurant.rating}
+                        </span>
+                     )}
+                  </div>
                   
                   <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-100">
                      <span className="font-bold text-amber-600">{restaurant.price} EGP</span>
@@ -111,11 +119,11 @@ export default function RestaurantsPage() {
                <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-4">
                    <div>
                        <label className="block text-sm font-medium text-slate-700 mb-1">Restaurant Name</label>
-                       <input required type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. Pyramids Day Restaurant" />
+                       <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. Abou El Sid" />
                    </div>
                    <div>
-                       <label className="block text-sm font-medium text-slate-700 mb-1">Location / Details</label>
-                       <input required type="text" value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. Starting from Giza" />
+                       <label className="block text-sm font-medium text-slate-700 mb-1">Location</label>
+                       <input required type="text" value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. Zamalek" />
                    </div>
                    <div className="grid grid-cols-2 gap-4">
                        <div>
@@ -123,13 +131,19 @@ export default function RestaurantsPage() {
                            <input required type="number" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. 500" />
                        </div>
                        <div>
-                           <label className="block text-sm font-medium text-slate-700 mb-1">Duration</label>
-                           <input type="text" value={formData.duration} onChange={e => setFormData({...formData, duration: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. 8 Hours" />
+                           <label className="block text-sm font-medium text-slate-700 mb-1">Rating</label>
+                           <input type="text" value={formData.rating} onChange={e => setFormData({...formData, rating: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. 4.5" />
+                       </div>
+                   </div>
+                   <div className="grid grid-cols-2 gap-4">
+                       <div className="col-span-2">
+                           <label className="block text-sm font-medium text-slate-700 mb-1">Cuisine</label>
+                           <input type="text" value={formData.cuisine} onChange={e => setFormData({...formData, cuisine: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. Seafood" />
                        </div>
                    </div>
                    <div>
                        <label className="block text-sm font-medium text-slate-700 mb-1">Image URL</label>
-                       <input type="text" value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. https://images.unsplash.com/..." />
+                       <input type="text" value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. /images/..." />
                    </div>
                    <div className="mt-4 flex justify-end gap-3">
                        <button type="button" onClick={closeModal} className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium transition">Cancel</button>

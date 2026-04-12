@@ -1,6 +1,5 @@
 
-import React from 'react';
-import { Settings, Save, Bell, MessageSquare, BarChart } from 'lucide-react';
+import { Save, Bell } from 'lucide-react';
 
 export default function NotificationsPage() {
   return (

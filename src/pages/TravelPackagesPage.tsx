@@ -6,7 +6,7 @@ export default function TravelPackagesPage() {
   const [travelpackages, setTravelPackages] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({ id: null, title: "", location: "", price: "", duration: "", image: "" });
+  const [formData, setFormData] = useState({ id: null, title: "", date: "", price: "", duration: "", image: "" });
 
   const fetchTravelPackages = () => {
     axiosClient.get("/admin/travelpackages").then((res) => setTravelPackages(res.data));
@@ -18,7 +18,7 @@ export default function TravelPackagesPage() {
 
   const openAddModal = () => {
     setIsEditing(false);
-    setFormData({ id: null, title: "", location: "", price: "", duration: "", image: "" });
+    setFormData({ id: null, title: "", date: "", price: "", duration: "", image: "" });
     setIsModalOpen(true);
   };
 
@@ -26,9 +26,9 @@ export default function TravelPackagesPage() {
     setIsEditing(true);
     setFormData({ 
       id: travelpackage.id, 
-      title: travelpackage.title || travelpackage.name || travelpackage.user_name, 
-      location: travelpackage.location, 
-      price: travelpackage.price, 
+      title: travelpackage.title, 
+      date: travelpackage.date || "", 
+      price: travelpackage.price || 0, 
       duration: travelpackage.duration || "",
       image: travelpackage.image 
     });
@@ -54,7 +54,7 @@ export default function TravelPackagesPage() {
   };
 
   const deletePackage = async (id: number) => {
-    if (confirm("Are you sure you want to delete this travelpackage?")) {
+    if (confirm("Are you sure you want to delete this travel package?")) {
       await axiosClient.delete(`/admin/travelpackages/${id}`);
       fetchTravelPackages();
     }
@@ -70,26 +70,26 @@ export default function TravelPackagesPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-         {travelpackages.map(travelpackage => (
-            <div key={travelpackage.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group">
-               <img src={travelpackage.image ? (travelpackage.image.startsWith('/') ? 'http://127.0.0.1:8000' + travelpackage.image : travelpackage.image) : 'https://via.placeholder.com/400'} alt={travelpackage.title || travelpackage.name || travelpackage.user_name} className="w-full h-48 object-cover" />
+         {travelpackages.map(pkg => (
+            <div key={pkg.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group">
+               <img src={pkg.image ? (pkg.image.startsWith('/') ? 'http://localhost:5173' + pkg.image : pkg.image) : 'https://via.placeholder.com/400'} alt={pkg.title} className="w-full h-48 object-cover" />
                <div className="p-5 flex-1 flex flex-col">
-                  <h3 className="font-bold text-lg text-slate-800 mb-1">{travelpackage.title || travelpackage.name || travelpackage.user_name}</h3>
-                  <p className="text-slate-500 text-sm mb-2 line-clamp-2" title={travelpackage.location}>{travelpackage.location}</p>
+                  <h3 className="font-bold text-lg text-slate-800 mb-1">{pkg.title}</h3>
+                  <p className="text-slate-500 text-sm mb-2 line-clamp-2" title={pkg.date}>📅 {pkg.date}</p>
                   
-                  {travelpackage.duration && (
+                  {pkg.duration && (
                      <span className="inline-block px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-md mb-4 self-start">
-                        {travelpackage.duration}
+                        {pkg.duration}
                      </span>
                   )}
                   
                   <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-100">
-                     <span className="font-bold text-amber-600">{travelpackage.price} EGP</span>
+                     <span className="font-bold text-amber-600">{pkg.price} EGP</span>
                      <div className="flex gap-2">
-                         <button onClick={() => openEditModal(travelpackage)} className="text-blue-500 hover:text-blue-700 bg-blue-50 p-2 rounded-lg transition border border-blue-100">
+                         <button onClick={() => openEditModal(pkg)} className="text-blue-500 hover:text-blue-700 bg-blue-50 p-2 rounded-lg transition border border-blue-100">
                             <Edit size={18} />
                          </button>
-                         <button onClick={() => deletePackage(travelpackage.id)} className="text-red-500 hover:text-red-700 bg-red-50 p-2 rounded-lg transition border border-red-100">
+                         <button onClick={() => deletePackage(pkg.id)} className="text-red-500 hover:text-red-700 bg-red-50 p-2 rounded-lg transition border border-red-100">
                             <Trash2 size={18} />
                          </button>
                      </div>
@@ -97,7 +97,7 @@ export default function TravelPackagesPage() {
                </div>
             </div>
          ))}
-         {travelpackages.length === 0 && <p className="col-span-3 text-center text-slate-500 p-8">No travelpackages found.</p>}
+         {travelpackages.length === 0 && <p className="col-span-3 text-center text-slate-500 p-8">No travel packages found.</p>}
       </div>
 
       {/* Modal */}
@@ -114,8 +114,8 @@ export default function TravelPackagesPage() {
                        <input required type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. Pyramids Day Package" />
                    </div>
                    <div>
-                       <label className="block text-sm font-medium text-slate-700 mb-1">Location / Details</label>
-                       <input required type="text" value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. Starting from Giza" />
+                       <label className="block text-sm font-medium text-slate-700 mb-1">Date</label>
+                       <input required type="text" value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. Oct 20 - Nov 5" />
                    </div>
                    <div className="grid grid-cols-2 gap-4">
                        <div>
@@ -124,12 +124,12 @@ export default function TravelPackagesPage() {
                        </div>
                        <div>
                            <label className="block text-sm font-medium text-slate-700 mb-1">Duration</label>
-                           <input type="text" value={formData.duration} onChange={e => setFormData({...formData, duration: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. 8 Hours" />
+                           <input type="text" value={formData.duration} onChange={e => setFormData({...formData, duration: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. 8 Days" />
                        </div>
                    </div>
                    <div>
                        <label className="block text-sm font-medium text-slate-700 mb-1">Image URL</label>
-                       <input type="text" value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. https://images.unsplash.com/..." />
+                       <input type="text" value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. /images/..." />
                    </div>
                    <div className="mt-4 flex justify-end gap-3">
                        <button type="button" onClick={closeModal} className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium transition">Cancel</button>

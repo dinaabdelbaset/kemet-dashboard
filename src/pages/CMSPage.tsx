@@ -1,6 +1,5 @@
 
-import React from 'react';
-import { Settings, Save, Bell, MessageSquare, BarChart } from 'lucide-react';
+import { Settings, Save } from 'lucide-react';
 
 export default function CMSPage() {
   return (

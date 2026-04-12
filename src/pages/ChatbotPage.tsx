@@ -1,6 +1,5 @@
 
-import React from 'react';
-import { Settings, Save, Bell, MessageSquare, BarChart } from 'lucide-react';
+import { Save, MessageSquare } from 'lucide-react';
 
 export default function ChatbotPage() {
   return (

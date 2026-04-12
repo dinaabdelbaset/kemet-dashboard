@@ -6,7 +6,7 @@ export default function OffersPage() {
   const [deals, setOffers] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({ id: null, title: "", location: "", price: "", duration: "", image: "" });
+  const [formData, setFormData] = useState({ id: null, title: "", locations: "", price: "", category: "", rating: "", image: "" });
 
   const fetchOffers = () => {
     axiosClient.get("/admin/deals").then((res) => setOffers(res.data));
@@ -18,7 +18,7 @@ export default function OffersPage() {
 
   const openAddModal = () => {
     setIsEditing(false);
-    setFormData({ id: null, title: "", location: "", price: "", duration: "", image: "" });
+    setFormData({ id: null, title: "", locations: "", price: "", category: "", rating: "", image: "" });
     setIsModalOpen(true);
   };
 
@@ -26,11 +26,12 @@ export default function OffersPage() {
     setIsEditing(true);
     setFormData({ 
       id: offer.id, 
-      title: offer.title || offer.name || offer.user_name, 
-      location: offer.location, 
-      price: offer.price, 
-      duration: offer.duration || "",
-      image: offer.image 
+      title: offer.title || offer.name || "", 
+      locations: offer.locations || offer.location || "", 
+      price: offer.price || "", 
+      category: offer.category || "",
+      rating: offer.rating || "",
+      image: offer.image || ""
     });
     setIsModalOpen(true);
   };
@@ -63,7 +64,7 @@ export default function OffersPage() {
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
-         <h2 className="text-3xl font-bold text-slate-800">Manage Offers</h2>
+         <h2 className="text-3xl font-bold text-slate-800">Manage Offers (Deals)</h2>
          <button onClick={openAddModal} className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-bold transition">
             <Plus size={20} /> Add New Offer
          </button>
@@ -72,14 +73,17 @@ export default function OffersPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
          {deals.map(offer => (
             <div key={offer.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group">
-               <img src={offer.image ? (offer.image.startsWith('/') ? 'http://127.0.0.1:8000' + offer.image : offer.image) : 'https://via.placeholder.com/400'} alt={offer.title || offer.name || offer.user_name} className="w-full h-48 object-cover" />
+               <img src={offer.image ? (offer.image.startsWith('/') ? 'http://localhost:5173' + offer.image : offer.image) : 'https://via.placeholder.com/400'} alt={offer.title} className="w-full h-48 object-cover" />
                <div className="p-5 flex-1 flex flex-col">
-                  <h3 className="font-bold text-lg text-slate-800 mb-1">{offer.title || offer.name || offer.user_name}</h3>
-                  <p className="text-slate-500 text-sm mb-2 line-clamp-2" title={offer.location}>{offer.location}</p>
+                  <div className="flex items-center gap-2 mb-2">
+                     {offer.category && <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full">{offer.category}</span>}
+                  </div>
+                  <h3 className="font-bold text-lg text-slate-800 mb-1">{offer.title}</h3>
+                  <p className="text-slate-500 text-sm mb-2 line-clamp-2" title={offer.locations}>{offer.locations}</p>
                   
-                  {offer.duration && (
-                     <span className="inline-block px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-md mb-4 self-start">
-                        {offer.duration}
+                  {offer.rating && (
+                     <span className="inline-block px-2 py-1 bg-amber-50 text-amber-600 text-xs font-bold rounded-md mb-4 self-start">
+                        ★ {offer.rating}
                      </span>
                   )}
                   
@@ -110,12 +114,12 @@ export default function OffersPage() {
                </div>
                <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-4">
                    <div>
-                       <label className="block text-sm font-medium text-slate-700 mb-1">Offer Name</label>
-                       <input required type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. Pyramids Day Offer" />
+                       <label className="block text-sm font-medium text-slate-700 mb-1">Offer Title</label>
+                       <input required type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. Pyramids Deal" />
                    </div>
                    <div>
-                       <label className="block text-sm font-medium text-slate-700 mb-1">Location / Details</label>
-                       <input required type="text" value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. Starting from Giza" />
+                       <label className="block text-sm font-medium text-slate-700 mb-1">Locations</label>
+                       <input required type="text" value={formData.locations} onChange={e => setFormData({...formData, locations: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. Cairo, Giza" />
                    </div>
                    <div className="grid grid-cols-2 gap-4">
                        <div>
@@ -123,13 +127,17 @@ export default function OffersPage() {
                            <input required type="number" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. 500" />
                        </div>
                        <div>
-                           <label className="block text-sm font-medium text-slate-700 mb-1">Duration</label>
-                           <input type="text" value={formData.duration} onChange={e => setFormData({...formData, duration: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. 8 Hours" />
+                           <label className="block text-sm font-medium text-slate-700 mb-1">Rating</label>
+                           <input type="text" value={formData.rating} onChange={e => setFormData({...formData, rating: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. 4.8" />
                        </div>
                    </div>
                    <div>
+                       <label className="block text-sm font-medium text-slate-700 mb-1">Category</label>
+                       <input type="text" value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. Historical" />
+                   </div>
+                   <div>
                        <label className="block text-sm font-medium text-slate-700 mb-1">Image URL</label>
-                       <input type="text" value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. https://images.unsplash.com/..." />
+                       <input type="text" value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. /images/..." />
                    </div>
                    <div className="mt-4 flex justify-end gap-3">
                        <button type="button" onClick={closeModal} className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium transition">Cancel</button>

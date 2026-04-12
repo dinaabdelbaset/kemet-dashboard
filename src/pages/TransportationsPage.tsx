@@ -6,7 +6,7 @@ export default function TransportationsPage() {
   const [transportations, setTransportation] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({ id: null, title: "", location: "", price: "", duration: "", image: "" });
+  const [formData, setFormData] = useState({ id: null, type: "", route: "", company: "", price: "", duration: "", image: "" });
 
   const fetchTransportation = () => {
     axiosClient.get("/admin/transportations").then((res) => setTransportation(res.data));
@@ -18,7 +18,7 @@ export default function TransportationsPage() {
 
   const openAddModal = () => {
     setIsEditing(false);
-    setFormData({ id: null, title: "", location: "", price: "", duration: "", image: "" });
+    setFormData({ id: null, type: "", route: "", company: "", price: "", duration: "", image: "" });
     setIsModalOpen(true);
   };
 
@@ -26,11 +26,12 @@ export default function TransportationsPage() {
     setIsEditing(true);
     setFormData({ 
       id: transportation.id, 
-      title: transportation.title || transportation.name, 
-      location: transportation.location, 
+      type: transportation.type, 
+      route: transportation.route,
+      company: transportation.company,
       price: transportation.price, 
       duration: transportation.duration || "",
-      image: transportation.image 
+      image: transportation.image || ""
     });
     setIsModalOpen(true);
   };
@@ -71,20 +72,44 @@ export default function TransportationsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
          {transportations.map(transportation => (
-            <div key={transportation.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group">
-               <img src={transportation.image ? (transportation.image.startsWith('/') ? 'http://127.0.0.1:8000' + transportation.image : transportation.image) : 'https://via.placeholder.com/400'} alt={transportation.title || transportation.name} className="w-full h-48 object-cover" />
+            <div key={transportation.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group relative">
+               {/* Fixed missing image representation */}
+               <div className="w-full h-48 bg-slate-100 flex items-center justify-center relative overflow-hidden">
+                  {transportation.image ? (
+                     <img 
+                        src={transportation.image.startsWith('/') ? 'http://localhost:5173' + transportation.image : transportation.image} 
+                        alt={transportation.type} 
+                        className="w-full h-full object-cover" 
+                     />
+                  ) : (
+                     <div className="flex flex-col items-center justify-center text-slate-400">
+                        <span className="text-4xl">🚐</span>
+                        <span className="text-xs font-semibold mt-2 uppercase tracking-wide opacity-50">{transportation.type} Image Missing</span>
+                     </div>
+                  )}
+                  {/* Floating type badge */}
+                  <span className="absolute top-3 left-3 bg-slate-900 text-white text-xs px-3 py-1.5 rounded-full font-bold shadow-md">
+                     {transportation.type}
+                  </span>
+               </div>
+               
                <div className="p-5 flex-1 flex flex-col">
-                  <h3 className="font-bold text-lg text-slate-800 mb-1">{transportation.title || transportation.name}</h3>
-                  <p className="text-slate-500 text-sm mb-2 line-clamp-2" title={transportation.location}>{transportation.location}</p>
+                  {/* Use route mapping instead of title */}
+                  <h3 className="font-bold text-lg text-slate-800 mb-1 leading-tight">{transportation.route}</h3>
+                  
+                  {/* Using company instead of location */}
+                  <p className="text-slate-500 text-sm mb-3 flex items-center gap-1.5">
+                     <span className="font-semibold text-slate-600">Operator:</span> {transportation.company || 'Unknown'}
+                  </p>
                   
                   {transportation.duration && (
-                     <span className="inline-block px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-md mb-4 self-start">
-                        {transportation.duration}
+                     <span className="inline-block px-2.5 py-1 bg-amber-50 text-amber-700 text-xs font-bold rounded-md mb-4 self-start border border-amber-100">
+                        ⏱ {transportation.duration}
                      </span>
                   )}
                   
                   <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-100">
-                     <span className="font-bold text-amber-600">{transportation.price} EGP</span>
+                     <span className="font-bold text-amber-600 text-lg">{transportation.price} EGP</span>
                      <div className="flex gap-2">
                          <button onClick={() => openEditModal(transportation)} className="text-blue-500 hover:text-blue-700 bg-blue-50 p-2 rounded-lg transition border border-blue-100">
                             <Edit size={18} />
@@ -97,43 +122,51 @@ export default function TransportationsPage() {
                </div>
             </div>
          ))}
-         {transportations.length === 0 && <p className="col-span-3 text-center text-slate-500 p-8">No transportations found.</p>}
+         {transportations.length === 0 && <p className="col-span-3 text-center text-slate-500 p-8 font-medium">No transportations found.</p>}
       </div>
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-           <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
-               <div className="flex justify-between items-center p-6 border-b border-slate-100">
-                   <h3 className="text-xl font-bold text-slate-800">{isEditing ? 'Edit Transport' : 'Add New Transport'}</h3>
-                   <button onClick={closeModal} className="text-slate-400 hover:text-slate-600"><X size={24} /></button>
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
+               <div className="flex justify-between items-center p-6 border-b border-slate-100 bg-slate-50/50">
+                   <h3 className="text-xl font-extrabold text-slate-800">{isEditing ? 'Edit Transport' : 'Add New Transport'}</h3>
+                   <button onClick={closeModal} className="text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-1 rounded-full transition"><X size={24} /></button>
                </div>
-               <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-4">
-                   <div>
-                       <label className="block text-sm font-medium text-slate-700 mb-1">Transport Name</label>
-                       <input required type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. Pyramids Day Transport" />
-                   </div>
-                   <div>
-                       <label className="block text-sm font-medium text-slate-700 mb-1">Location / Details</label>
-                       <input required type="text" value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. Starting from Giza" />
-                   </div>
+               <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-5">
                    <div className="grid grid-cols-2 gap-4">
                        <div>
-                           <label className="block text-sm font-medium text-slate-700 mb-1">Price (EGP)</label>
-                           <input required type="number" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. 500" />
+                           <label className="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Type</label>
+                           <input required type="text" value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition font-medium" placeholder="Flight, Bus..." />
                        </div>
                        <div>
-                           <label className="block text-sm font-medium text-slate-700 mb-1">Duration</label>
-                           <input type="text" value={formData.duration} onChange={e => setFormData({...formData, duration: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. 8 Hours" />
+                           <label className="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Operator Company</label>
+                           <input required type="text" value={formData.company} onChange={e => setFormData({...formData, company: e.target.value})} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition font-medium" placeholder="e.g. GoBus" />
+                       </div>
+                   </div>
+                   
+                   <div>
+                       <label className="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Route</label>
+                       <input required type="text" value={formData.route} onChange={e => setFormData({...formData, route: e.target.value})} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition font-medium" placeholder="e.g. Cairo -> Luxor" />
+                   </div>
+                   
+                   <div className="grid grid-cols-2 gap-4">
+                       <div>
+                           <label className="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Price (EGP)</label>
+                           <input required type="number" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition font-medium" placeholder="450" />
+                       </div>
+                       <div>
+                           <label className="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Duration</label>
+                           <input type="text" value={formData.duration} onChange={e => setFormData({...formData, duration: e.target.value})} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition font-medium" placeholder="3h 30m" />
                        </div>
                    </div>
                    <div>
-                       <label className="block text-sm font-medium text-slate-700 mb-1">Image URL</label>
-                       <input type="text" value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. https://images.unsplash.com/..." />
+                       <label className="block text-xs font-bold text-slate-600 mb-1.5 uppercase tracking-wider">Image URL (Optional)</label>
+                       <input type="text" value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition text-sm" placeholder="e.g. /images/bus.jpg" />
                    </div>
-                   <div className="mt-4 flex justify-end gap-3">
-                       <button type="button" onClick={closeModal} className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium transition">Cancel</button>
-                       <button type="submit" className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-bold transition">Save Transport</button>
+                   <div className="mt-4 flex justify-end gap-3 pt-4 border-t border-slate-100">
+                       <button type="button" onClick={closeModal} className="px-5 py-2.5 text-slate-600 hover:bg-slate-100 rounded-lg font-bold transition">Cancel</button>
+                       <button type="submit" className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white shadow-lg shadow-amber-500/30 rounded-lg font-bold transition flex items-center justify-center">Save Transport</button>
                    </div>
                </form>
            </div>

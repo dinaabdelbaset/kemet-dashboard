@@ -52,6 +52,7 @@ export default function BookingsPage() {
               <th className="p-4 font-semibold text-slate-600">Type</th>
               <th className="p-4 font-semibold text-slate-600">Item Title</th>
               <th className="p-4 font-semibold text-slate-600">Total Price</th>
+              <th className="p-4 font-semibold text-slate-600">Profit Details</th>
               <th className="p-4 font-semibold text-slate-600">Status</th>
               <th className="p-4 font-semibold text-slate-600 text-right">Actions</th>
             </tr>
@@ -63,7 +64,17 @@ export default function BookingsPage() {
                 <td className="p-4 font-medium text-slate-800">{booking.user?.first_name || 'Guest'}</td>
                 <td className="p-4 text-slate-500 uppercase text-xs font-bold tracking-wider">{booking.booking_type}</td>
                 <td className="p-4 font-medium text-amber-600">{booking.item_title}</td>
-                <td className="p-4 font-bold text-slate-800">{booking.total_price} EGP</td>
+                <td className="p-4 font-bold text-slate-800">{booking.total_price} $</td>
+                <td className="p-4">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs font-bold text-green-600">
+                      Kemet Profit: {booking.platform_profit || 0} $ ({booking.commission_percentage || '0%'})
+                    </span>
+                    <span className="text-xs font-medium text-slate-500">
+                      Partner Share: {booking.partner_share || booking.total_price} $
+                    </span>
+                  </div>
+                </td>
                 <td className="p-4">
                   <span className={`px-2 py-1 rounded text-xs font-bold ${
                     booking.status === 'confirmed' ? 'bg-green-100 text-green-700' :
@@ -83,7 +94,7 @@ export default function BookingsPage() {
                 </td>
               </tr>
             ))}
-            {bookings.length === 0 && <tr><td colSpan={7} className="p-8 text-center text-slate-500">No bookings found.</td></tr>}
+            {bookings.length === 0 && <tr><td colSpan={8} className="p-8 text-center text-slate-500">No bookings found.</td></tr>}
           </tbody>
         </table>
       </div>

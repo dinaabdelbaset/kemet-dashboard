@@ -1,6 +1,5 @@
 
-import React from 'react';
-import { Settings, Save, Bell, MessageSquare, BarChart } from 'lucide-react';
+import { Save, BarChart } from 'lucide-react';
 
 export default function ReportsPage() {
   return (

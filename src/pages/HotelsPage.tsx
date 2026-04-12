@@ -6,7 +6,7 @@ export default function HotelsPage() {
   const [hotels, setHotels] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({ id: null, title: "", location: "", price_starts_from: "", image: "" });
+  const [formData, setFormData] = useState({ id: null, name: "", location: "", price: "", rating: "", image: "" });
 
   const fetchHotels = () => {
     axiosClient.get("/admin/hotels").then((res) => setHotels(res.data));
@@ -18,7 +18,7 @@ export default function HotelsPage() {
 
   const openAddModal = () => {
     setIsEditing(false);
-    setFormData({ id: null, title: "", location: "", price_starts_from: "", image: "" });
+    setFormData({ id: null, name: "", location: "", price: "", rating: "", image: "" });
     setIsModalOpen(true);
   };
 
@@ -26,10 +26,11 @@ export default function HotelsPage() {
     setIsEditing(true);
     setFormData({ 
       id: hotel.id, 
-      title: hotel.title || hotel.name, 
+      name: hotel.name, 
       location: hotel.location, 
-      price_starts_from: hotel.price || hotel.price_starts_from, 
-      image: hotel.image || hotel.img 
+      price: hotel.price || 0, 
+      rating: hotel.rating || "",
+      image: hotel.image 
     });
     setIsModalOpen(true);
   };
@@ -71,13 +72,19 @@ export default function HotelsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
          {hotels.map(hotel => (
             <div key={hotel.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group">
-               <img src={hotel.image || hotel.img ? ((hotel.image || hotel.img).startsWith('/') ? 'http://127.0.0.1:8000' + (hotel.image || hotel.img) : (hotel.image || hotel.img)) : 'https://via.placeholder.com/400'} alt={hotel.title || hotel.name} className="w-full h-48 object-cover" />
+               <img src={hotel.image ? (hotel.image.startsWith('/') ? 'http://localhost:5173' + hotel.image : hotel.image) : 'https://via.placeholder.com/400'} alt={hotel.name} className="w-full h-48 object-cover" />
                <div className="p-5 flex-1 flex flex-col">
-                  <h3 className="font-bold text-lg text-slate-800 mb-1">{hotel.title || hotel.name}</h3>
+                  <h3 className="font-bold text-lg text-slate-800 mb-1">{hotel.name}</h3>
                   <p className="text-slate-500 text-sm mb-4 line-clamp-2 cursor-pointer" title={hotel.location}>{hotel.location}</p>
                   
+                  {hotel.rating && (
+                     <span className="inline-block px-2 py-1 bg-amber-50 text-amber-600 text-xs font-bold rounded-md mb-4 self-start">
+                        ★ {hotel.rating}
+                     </span>
+                  )}
+
                   <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-100">
-                     <span className="font-bold text-amber-600">{hotel.price || hotel.price_starts_from} EGP</span>
+                     <span className="font-bold text-amber-600">{hotel.price} EGP</span>
                      <div className="flex gap-2">
                          <button onClick={() => openEditModal(hotel)} className="text-blue-500 hover:text-blue-700 bg-blue-50 p-2 rounded-lg transition border border-blue-100">
                             <Edit size={18} />
@@ -104,19 +111,25 @@ export default function HotelsPage() {
                <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-4">
                    <div>
                        <label className="block text-sm font-medium text-slate-700 mb-1">Hotel Name</label>
-                       <input required type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. Hilton Cairo" />
+                       <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. Hilton Cairo" />
                    </div>
                    <div>
                        <label className="block text-sm font-medium text-slate-700 mb-1">Location / Address</label>
                        <input required type="text" value={formData.location} onChange={e => setFormData({...formData, location: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. Downtown Cairo" />
                    </div>
-                   <div>
-                       <label className="block text-sm font-medium text-slate-700 mb-1">Price Starts From (EGP)</label>
-                       <input required type="number" value={formData.price_starts_from} onChange={e => setFormData({...formData, price_starts_from: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. 1500" />
+                   <div className="grid grid-cols-2 gap-4">
+                       <div>
+                           <label className="block text-sm font-medium text-slate-700 mb-1">Price Starts From (EGP)</label>
+                           <input required type="number" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. 1500" />
+                       </div>
+                       <div>
+                           <label className="block text-sm font-medium text-slate-700 mb-1">Rating</label>
+                           <input type="text" value={formData.rating} onChange={e => setFormData({...formData, rating: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. 4.5" />
+                       </div>
                    </div>
                    <div>
                        <label className="block text-sm font-medium text-slate-700 mb-1">Image URL</label>
-                       <input type="text" value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. https://images.unsplash.com/..." />
+                       <input type="text" value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. /images/..." />
                    </div>
                    <div className="mt-4 flex justify-end gap-3">
                        <button type="button" onClick={closeModal} className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium transition">Cancel</button>
