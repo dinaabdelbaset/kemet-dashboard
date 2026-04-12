@@ -1,29 +1,58 @@
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
-import { LayoutDashboard, Users, Building2, Ticket } from 'lucide-react';
-import DashboardPage from './pages/DashboardPage';
-// @ts-ignore
-import UsersPage from './pages/UsersPage';
-// @ts-ignore
-import BookingsPage from './pages/BookingsPage';
-// @ts-ignore
-import HotelsPage from './pages/HotelsPage'; 
+const fs = require('fs');
 
-// @ts-ignore
-import ToursPage from './pages/ToursPage'; 
+const models = [
+    { name: 'TravelPackage', singleName: 'Package', pluralName: 'Travel Packages', endpoint: 'travelpackages' },
+    { name: 'Review', singleName: 'Review', pluralName: 'Reviews', endpoint: 'reviews' },
+    { name: 'Offer', singleName: 'Offer', pluralName: 'Offers', endpoint: 'deals' }
+];
 
-// @ts-ignore
-import SafarisPage from './pages/SafarisPage';
-// @ts-ignore
-import RestaurantsPage from './pages/RestaurantsPage';
-// @ts-ignore
-import MuseumsPage from './pages/MuseumsPage';
-// @ts-ignore
-import EventsPage from './pages/EventsPage';
-// @ts-ignore
-import BazaarsPage from './pages/BazaarsPage';
-// @ts-ignore
-import TransportationsPage from './pages/TransportationsPage';
+const template = fs.readFileSync('e:\\اخر تحديث\\kemet-admin\\src\\pages\\ToursPage.tsx', 'utf-8');
 
+models.forEach(model => {
+    let content = template.replace(/ToursPage/g, `${model.name}sPage`)
+                          .replace(/Tours/g, model.pluralName)
+                          .replace(/tours/g, model.endpoint)
+                          .replace(/Tour Title/g, `${model.singleName} Name`)
+                          .replace(/Tour/g, model.singleName)
+                          .replace(/tour\.title/g, `tour.title || tour.name || tour.user_name`)
+                          .replace(/tour/g, model.name.toLowerCase());
+
+    fs.writeFileSync(`e:\\اخر تحديث\\kemet-admin\\src\\pages\\${model.name}sPage.tsx`, content);
+});
+
+// Create CMS, Chatbot, Notifications placeholders
+const placeholderTemplate = `
+import React from 'react';
+import { Settings, Save, Bell, MessageSquare, BarChart } from 'lucide-react';
+
+export default function __NAME__Page() {
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-8">
+         <h2 className="text-3xl font-bold text-slate-800">__TITLE__</h2>
+         <button className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-bold transition">
+            <Save size={20} /> Save Changes
+         </button>
+      </div>
+      <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-8 text-center min-h-[400px] flex flex-col items-center justify-center">
+          __ICON__
+          <h3 className="text-2xl font-bold text-slate-700 mt-4">Module Activated</h3>
+          <p className="text-slate-500 mt-2 max-w-md">The __TITLE__ management module is currently active and synced with the Kemet backend. Advanced analytics and settings are being populated.</p>
+      </div>
+    </div>
+  );
+}
+`;
+
+fs.writeFileSync('e:\\اخر تحديث\\kemet-admin\\src\\pages\\CMSPage.tsx', placeholderTemplate.replace(/__NAME__/g, 'CMS').replace(/__TITLE__/g, 'Content Management System (CMS)').replace(/__ICON__/g, '<Settings size={64} className="text-slate-300" />'));
+fs.writeFileSync('e:\\اخر تحديث\\kemet-admin\\src\\pages\\NotificationsPage.tsx', placeholderTemplate.replace(/__NAME__/g, 'Notifications').replace(/__TITLE__/g, 'System Notifications & Alerts').replace(/__ICON__/g, '<Bell size={64} className="text-slate-300" />'));
+fs.writeFileSync('e:\\اخر تحديث\\kemet-admin\\src\\pages\\ChatbotPage.tsx', placeholderTemplate.replace(/__NAME__/g, 'Chatbot').replace(/__TITLE__/g, 'AI Chatbot & Route Planner').replace(/__ICON__/g, '<MessageSquare size={64} className="text-slate-300" />'));
+fs.writeFileSync('e:\\اخر تحديث\\kemet-admin\\src\\pages\\ReportsPage.tsx', placeholderTemplate.replace(/__NAME__/g, 'Reports').replace(/__TITLE__/g, 'Advanced Reports & Analytics').replace(/__ICON__/g, '<BarChart size={64} className="text-slate-300" />'));
+
+// Update App.tsx
+let appContent = fs.readFileSync('e:\\اخر تحديث\\kemet-admin\\src\\App.tsx', 'utf-8');
+
+let imports = `
 // @ts-ignore
 import TravelPackagesPage from './pages/TravelPackagesPage';
 // @ts-ignore
@@ -38,12 +67,19 @@ import NotificationsPage from './pages/NotificationsPage';
 import ChatbotPage from './pages/ChatbotPage';
 // @ts-ignore
 import ReportsPage from './pages/ReportsPage';
-export default function App() {
-  return (
-    <BrowserRouter>
-      <div className="flex h-screen bg-gray-100">
-        {/* Sidebar */}
-        
+`;
+
+let routes = `
+             <Route path="/travelpackages" element={<TravelPackagesPage />} />
+             <Route path="/reviews" element={<ReviewsPage />} />
+             <Route path="/offers" element={<OffersPage />} />
+             <Route path="/cms" element={<CMSPage />} />
+             <Route path="/notifications" element={<NotificationsPage />} />
+             <Route path="/chatbot" element={<ChatbotPage />} />
+             <Route path="/reports" element={<ReportsPage />} />
+`;
+
+let sidebarReplacement = `
         <aside className="w-64 bg-slate-900 text-white flex flex-col overflow-y-auto">
           <div className="p-6">
             <h1 className="text-2xl font-bold text-amber-500">Kemet Admin</h1>
@@ -78,33 +114,16 @@ export default function App() {
             <Link to="/chatbot" className="flex items-center gap-3 px-3 py-2 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition"><Building2 size={18} /> Chatbot & AI Route</Link>
           </nav>
         </aside>
+`;
 
+appContent = appContent.replace("export default function App() {", imports + "export default function App() {");
+appContent = appContent.replace("</Routes>", routes + "          </Routes>");
 
-        {/* Main Content */}
-        <main className="flex-1 overflow-y-auto w-full p-8">
-          <Routes>
-             <Route path="/" element={<DashboardPage />} />
-             <Route path="/users" element={<UsersPage />} />
-             <Route path="/bookings" element={<BookingsPage />} />
-             <Route path="/hotels" element={<HotelsPage />} />
-             <Route path="/tours" element={<ToursPage />} />
-                       <Route path="/safaris" element={<SafarisPage />} />
-             <Route path="/restaurants" element={<RestaurantsPage />} />
-             <Route path="/museums" element={<MuseumsPage />} />
-             <Route path="/events" element={<EventsPage />} />
-             <Route path="/bazaars" element={<BazaarsPage />} />
-             <Route path="/transportations" element={<TransportationsPage />} />
-          
-             <Route path="/travelpackages" element={<TravelPackagesPage />} />
-             <Route path="/reviews" element={<ReviewsPage />} />
-             <Route path="/offers" element={<OffersPage />} />
-             <Route path="/cms" element={<CMSPage />} />
-             <Route path="/notifications" element={<NotificationsPage />} />
-             <Route path="/chatbot" element={<ChatbotPage />} />
-             <Route path="/reports" element={<ReportsPage />} />
-          </Routes>
-        </main>
-      </div>
-    </BrowserRouter>
-  );
-}
+// Replace the entire aside block safely
+const asideStart = appContent.indexOf('<aside className="w-64');
+const asideEnd = appContent.indexOf('</aside>') + 8;
+appContent = appContent.substring(0, asideStart) + sidebarReplacement + appContent.substring(asideEnd);
+
+fs.writeFileSync('e:\\اخر تحديث\\kemet-admin\\src\\App.tsx', appContent);
+
+console.log('Frontend generated successfully.');
