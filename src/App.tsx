@@ -11,6 +11,18 @@ import HotelsPage from './pages/HotelsPage';
 // @ts-ignore
 import ToursPage from './pages/ToursPage'; 
 
+// @ts-ignore
+import SafarisPage from './pages/SafarisPage';
+// @ts-ignore
+import RestaurantsPage from './pages/RestaurantsPage';
+// @ts-ignore
+import MuseumsPage from './pages/MuseumsPage';
+// @ts-ignore
+import EventsPage from './pages/EventsPage';
+// @ts-ignore
+import BazaarsPage from './pages/BazaarsPage';
+// @ts-ignore
+import TransportationsPage from './pages/TransportationsPage';
 export default function App() {
   return (
     <BrowserRouter>
@@ -36,6 +48,24 @@ export default function App() {
             <Link to="/tours" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition">
               <Ticket size={20} /> Tours
             </Link>
+                      <Link to="/safaris" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition">
+              <Building2 size={20} /> Safaris
+            </Link>
+            <Link to="/restaurants" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition">
+              <Building2 size={20} /> Restaurants
+            </Link>
+            <Link to="/museums" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition">
+              <Building2 size={20} /> Museums
+            </Link>
+            <Link to="/events" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition">
+              <Building2 size={20} /> Events
+            </Link>
+            <Link to="/bazaars" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition">
+              <Building2 size={20} /> Bazaars
+            </Link>
+            <Link to="/transportations" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition">
+              <Building2 size={20} /> Transportation
+            </Link>
           </nav>
         </aside>
 
@@ -47,6 +77,12 @@ export default function App() {
              <Route path="/bookings" element={<BookingsPage />} />
              <Route path="/hotels" element={<HotelsPage />} />
              <Route path="/tours" element={<ToursPage />} />
+                       <Route path="/safaris" element={<SafarisPage />} />
+             <Route path="/restaurants" element={<RestaurantsPage />} />
+             <Route path="/museums" element={<MuseumsPage />} />
+             <Route path="/events" element={<EventsPage />} />
+             <Route path="/bazaars" element={<BazaarsPage />} />
+             <Route path="/transportations" element={<TransportationsPage />} />
           </Routes>
         </main>
       </div>
