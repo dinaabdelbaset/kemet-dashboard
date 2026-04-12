@@ -3,17 +3,17 @@ import axiosClient from "../axiosClient";
 import { Trash2, Edit, Plus, X } from "lucide-react";
 
 export default function TravelPackagesPage() {
-  const [travelpackages, setTravel Packages] = useState<any[]>([]);
+  const [travelpackages, setTravelPackages] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({ id: null, title: "", location: "", price: "", duration: "", image: "" });
 
-  const fetchTravel Packages = () => {
-    axiosClient.get("/admin/travelpackages").then((res) => setTravel Packages(res.data));
+  const fetchTravelPackages = () => {
+    axiosClient.get("/admin/travelpackages").then((res) => setTravelPackages(res.data));
   };
 
   useEffect(() => {
-    fetchTravel Packages();
+    fetchTravelPackages();
   }, []);
 
   const openAddModal = () => {
@@ -46,7 +46,7 @@ export default function TravelPackagesPage() {
         await axiosClient.post(`/admin/travelpackages`, formData);
       }
       closeModal();
-      fetchTravel Packages();
+      fetchTravelPackages();
     } catch (err) {
       console.error(err);
       alert("Error saving travelpackage!");
@@ -56,7 +56,7 @@ export default function TravelPackagesPage() {
   const deletePackage = async (id: number) => {
     if (confirm("Are you sure you want to delete this travelpackage?")) {
       await axiosClient.delete(`/admin/travelpackages/${id}`);
-      fetchTravel Packages();
+      fetchTravelPackages();
     }
   };
 
