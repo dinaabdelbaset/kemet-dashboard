@@ -63,7 +63,7 @@ export default function EventsPage() {
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
-         <h2 className="text-3xl font-bold text-slate-800">Manage Events (One Day Trips)</h2>
+         <h2 className="text-3xl font-bold text-slate-800">Manage Events</h2>
          <button onClick={openAddModal} className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-bold transition">
             <Plus size={20} /> Add New Event
          </button>
