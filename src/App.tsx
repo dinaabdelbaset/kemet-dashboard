@@ -8,6 +8,9 @@ import BookingsPage from './pages/BookingsPage';
 // @ts-ignore
 import HotelsPage from './pages/HotelsPage'; 
 
+// @ts-ignore
+import ToursPage from './pages/ToursPage'; 
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -30,6 +33,9 @@ export default function App() {
             <Link to="/hotels" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition">
               <Building2 size={20} /> Hotels
             </Link>
+            <Link to="/tours" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition">
+              <Ticket size={20} /> Tours
+            </Link>
           </nav>
         </aside>
 
@@ -40,6 +46,7 @@ export default function App() {
              <Route path="/users" element={<UsersPage />} />
              <Route path="/bookings" element={<BookingsPage />} />
              <Route path="/hotels" element={<HotelsPage />} />
+             <Route path="/tours" element={<ToursPage />} />
           </Routes>
         </main>
       </div>
