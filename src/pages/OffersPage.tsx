@@ -2,8 +2,25 @@ import { useEffect, useState } from "react";
 import axiosClient from "../axiosClient";
 import { Trash2, Edit, Plus, X } from "lucide-react";
 
-export default function OffersPage() {
+export default function OffersPage({ userRole }: { userRole?: string }) {
   const [deals, setOffers] = useState<any[]>([]);
+  const roleCategoryMap: any = {
+    'hotel': ['hotel', 'resort'],
+    'safari': ['safari'],
+    'restaurant': ['restaurant', 'dining', 'food'],
+    'museum': ['museum', 'historical'],
+    'event': ['event', 'festival', 'show', 'party'],
+    'tour': ['tour', 'cruise', 'diving', 'nile cruise'],
+  };
+
+  const visibleDeals = userRole === 'superadmin' || !userRole 
+    ? deals 
+    : deals.filter(deal => {
+        const keywords = roleCategoryMap[userRole] || [userRole];
+        const cat = (deal.category || '').toLowerCase();
+        return keywords.some((k) => cat.includes(k));
+      });
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({ id: null, title: "", locations: "", price: "", category: "", rating: "", image: "" });
@@ -18,14 +35,15 @@ export default function OffersPage() {
 
   const openAddModal = () => {
     setIsEditing(false);
-    setFormData({ id: null, title: "", locations: "", price: "", category: "", rating: "", image: "" });
+    setFormData({ id: null, title: "", locations: "", price: "", category: "", rating: "", image: "" , description: "" });
     setIsModalOpen(true);
   };
 
   const openEditModal = (offer: any) => {
     setIsEditing(true);
     setFormData({ 
-      id: offer.id, 
+      id: offer.id,
+      description: offer.description || "", 
       title: offer.title || offer.name || "", 
       locations: offer.locations || offer.location || "", 
       price: offer.price || "", 
@@ -71,7 +89,7 @@ export default function OffersPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-         {deals.map(offer => (
+         {visibleDeals.map(offer => (
             <div key={offer.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group">
                <img src={offer.image ? (offer.image.startsWith('/') ? 'http://localhost:5173' + offer.image : offer.image) : 'https://via.placeholder.com/400'} alt={offer.title} className="w-full h-48 object-cover" />
                <div className="p-5 flex-1 flex flex-col">
@@ -88,7 +106,7 @@ export default function OffersPage() {
                   )}
                   
                   <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-100">
-                     <span className="font-bold text-amber-600">{offer.price} EGP</span>
+                     <span className="font-bold text-amber-600">{offer.price_starts_from || offer.ticket_price || offer.price_range_min || offer.price} EGP</span>
                      <div className="flex gap-2">
                          <button onClick={() => openEditModal(offer)} className="text-blue-500 hover:text-blue-700 bg-blue-50 p-2 rounded-lg transition border border-blue-100">
                             <Edit size={18} />
@@ -101,7 +119,7 @@ export default function OffersPage() {
                </div>
             </div>
          ))}
-         {deals.length === 0 && <p className="col-span-3 text-center text-slate-500 p-8">No deals found.</p>}
+         {visibleDeals.length === 0 && <p className="col-span-3 text-center text-slate-500 p-8">No deals found.</p>}
       </div>
 
       {/* Modal */}
@@ -124,7 +142,7 @@ export default function OffersPage() {
                    <div className="grid grid-cols-2 gap-4">
                        <div>
                            <label className="block text-sm font-medium text-slate-700 mb-1">Price (EGP)</label>
-                           <input required type="number" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. 500" />
+                           <input required type="number" value={formData.price_starts_from || formData.ticket_price || formData.price_range_min || formData.price} onChange={e => setFormData({...formData, price: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. 500" />
                        </div>
                        <div>
                            <label className="block text-sm font-medium text-slate-700 mb-1">Rating</label>
@@ -138,6 +156,11 @@ export default function OffersPage() {
                    <div>
                        <label className="block text-sm font-medium text-slate-700 mb-1">Image URL</label>
                        <input type="text" value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. /images/..." />
+                   </div>
+                   
+                   <div>
+                       <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                       <textarea rows={3} value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="Enter detailed description..."></textarea>
                    </div>
                    <div className="mt-4 flex justify-end gap-3">
                        <button type="button" onClick={closeModal} className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium transition">Cancel</button>

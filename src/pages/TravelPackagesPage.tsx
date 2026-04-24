@@ -18,17 +18,18 @@ export default function TravelPackagesPage() {
 
   const openAddModal = () => {
     setIsEditing(false);
-    setFormData({ id: null, title: "", date: "", price: "", duration: "", image: "" });
+    setFormData({ id: null, title: "", date: "", price: "", duration: "", image: "" , description: "" });
     setIsModalOpen(true);
   };
 
   const openEditModal = (travelpackage: any) => {
     setIsEditing(true);
     setFormData({ 
-      id: travelpackage.id, 
+      id: travelpackage.id,
+      description: travelpackage.description || "", 
       title: travelpackage.title, 
       date: travelpackage.date || "", 
-      price: travelpackage.price || 0, 
+      price: travelpackage.price_starts_from || travelpackage.ticket_price || travelpackage.price_range_min || travelpackage.price || 0, 
       duration: travelpackage.duration || "",
       image: travelpackage.image 
     });
@@ -84,7 +85,7 @@ export default function TravelPackagesPage() {
                   )}
                   
                   <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-100">
-                     <span className="font-bold text-amber-600">{pkg.price} EGP</span>
+                     <span className="font-bold text-amber-600">{pkg.price_starts_from || pkg.ticket_price || pkg.price_range_min || pkg.price} EGP</span>
                      <div className="flex gap-2">
                          <button onClick={() => openEditModal(pkg)} className="text-blue-500 hover:text-blue-700 bg-blue-50 p-2 rounded-lg transition border border-blue-100">
                             <Edit size={18} />
@@ -120,7 +121,7 @@ export default function TravelPackagesPage() {
                    <div className="grid grid-cols-2 gap-4">
                        <div>
                            <label className="block text-sm font-medium text-slate-700 mb-1">Price (EGP)</label>
-                           <input required type="number" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. 500" />
+                           <input required type="number" value={formData.price_starts_from || formData.ticket_price || formData.price_range_min || formData.price} onChange={e => setFormData({...formData, price: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. 500" />
                        </div>
                        <div>
                            <label className="block text-sm font-medium text-slate-700 mb-1">Duration</label>
@@ -130,6 +131,11 @@ export default function TravelPackagesPage() {
                    <div>
                        <label className="block text-sm font-medium text-slate-700 mb-1">Image URL</label>
                        <input type="text" value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. /images/..." />
+                   </div>
+                   
+                   <div>
+                       <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                       <textarea rows={3} value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="Enter detailed description..."></textarea>
                    </div>
                    <div className="mt-4 flex justify-end gap-3">
                        <button type="button" onClick={closeModal} className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium transition">Cancel</button>

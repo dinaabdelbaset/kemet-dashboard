@@ -16,7 +16,8 @@ export default function UsersPage() {
   }, []);
 
   const openEditModal = (user: any) => {
-    setFormData({ id: user.id, first_name: user.first_name, last_name: user.last_name, email: user.email, phone: user.phone || "" });
+    setFormData({ id: user.id,
+      description: user.description || "", first_name: user.first_name, last_name: user.last_name, email: user.email, phone: user.phone || "" });
     setIsModalOpen(true);
   };
 
@@ -101,6 +102,11 @@ export default function UsersPage() {
                    <div>
                        <label className="block text-sm font-medium text-slate-700 mb-1">Phone</label>
                        <input type="text" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" />
+                   </div>
+                   
+                   <div>
+                       <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                       <textarea rows={3} value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="Enter detailed description..."></textarea>
                    </div>
                    <div className="mt-4 flex justify-end gap-3">
                        <button type="button" onClick={closeModal} className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium transition">Cancel</button>

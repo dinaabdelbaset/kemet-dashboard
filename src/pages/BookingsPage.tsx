@@ -16,7 +16,8 @@ export default function BookingsPage() {
   }, []);
 
   const openEditModal = (booking: any) => {
-    setFormData({ id: booking.id, status: booking.status });
+    setFormData({ id: booking.id,
+      description: booking.description || "", status: booking.status });
     setIsModalOpen(true);
   };
 
@@ -118,6 +119,11 @@ export default function BookingsPage() {
                          <option value="confirmed">Confirmed</option>
                          <option value="cancelled">Cancelled</option>
                        </select>
+                   </div>
+                   
+                   <div>
+                       <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                       <textarea rows={3} value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="Enter detailed description..."></textarea>
                    </div>
                    <div className="mt-4 flex justify-end gap-3">
                        <button type="button" onClick={closeModal} className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium transition">Cancel</button>

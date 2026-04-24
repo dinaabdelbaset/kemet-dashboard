@@ -6,6 +6,7 @@ export default function EventsPage() {
   const [events, setEvents] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState('All');
   const [formData, setFormData] = useState({ id: null, title: "", location: "", date: "", category: "", image: "" });
 
   const fetchEvents = () => {
@@ -60,6 +61,17 @@ export default function EventsPage() {
     }
   };
 
+
+  const uniqueLocations = ['All', ...new Set(events.map((item: any) => item.location).filter(Boolean))];
+  const filteredItems = selectedLocation === 'All' ? events : events.filter((item: any) => item.location === selectedLocation);
+
+  const groupedItems = filteredItems.reduce((acc: any, item: any) => {
+    const loc = item.location || 'Unknown Location';
+    if (!acc[loc]) acc[loc] = [];
+    acc[loc].push(item);
+    return acc;
+  }, {});
+
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
@@ -69,8 +81,17 @@ export default function EventsPage() {
          </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-         {events.map(event => (
+      <div className="space-y-12">
+         {Object.entries(groupedItems).map(([locName, locItems]: [string, any]) => (
+            <div key={locName}>
+               <div className="flex items-center gap-3 mb-6 border-b border-slate-200 pb-3">
+                  <div className="w-2 h-8 bg-amber-500 rounded-full"></div>
+                  <h3 className="text-2xl font-bold text-slate-800">{locName}</h3>
+                  <span className="text-sm font-medium text-slate-500 bg-slate-100 px-3 py-1 rounded-full">{locItems.length} Items</span>
+               </div>
+               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+         {locItems.map(event=> (
             <div key={event.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group">
                <img src={event.image ? (event.image.startsWith('/') ? 'http://localhost:5173' + event.image : event.image) : 'https://via.placeholder.com/400'} alt={event.title} className="w-full h-48 object-cover" />
                <div className="p-5 flex-1 flex flex-col">
@@ -97,7 +118,12 @@ export default function EventsPage() {
                </div>
             </div>
          ))}
-         {events.length === 0 && <p className="col-span-3 text-center text-slate-500 p-8">No events found.</p>}
+         
+      
+               </div>
+            </div>
+         ))}
+         {events.length === 0 && <p className="text-center text-slate-500 p-8">No items found.</p>}
       </div>
 
       {/* Modal */}

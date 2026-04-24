@@ -67,7 +67,7 @@ export default function DashboardPage() {
              <div className="space-y-4">
                {stats.top_places.map((place: any, index: number) => (
                  <div key={index} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100">
-                   <span className="font-bold text-slate-700">{place.name}</span>
+                   <span className="font-bold text-slate-700">{place.title || place.name}</span>
                    <span className="bg-amber-100 text-amber-700 py-1 px-3 rounded-full text-xs font-bold">{place.visits} Bookings</span>
                  </div>
                ))}

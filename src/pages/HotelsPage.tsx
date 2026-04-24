@@ -4,9 +4,10 @@ import { Trash2, Edit, Plus, X } from "lucide-react";
 
 export default function HotelsPage() {
   const [hotels, setHotels] = useState<any[]>([]);
+  const [selectedLocation, setSelectedLocation] = useState('All');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({ id: null, name: "", location: "", price: "", rating: "", image: "" });
+  const [formData, setFormData] = useState({ id: null, name: "", location: "", price: "", rating: "", image: "", description: "" });
 
   const fetchHotels = () => {
     axiosClient.get("/admin/hotels").then((res) => setHotels(res.data));
@@ -18,7 +19,7 @@ export default function HotelsPage() {
 
   const openAddModal = () => {
     setIsEditing(false);
-    setFormData({ id: null, name: "", location: "", price: "", rating: "", image: "" });
+    setFormData({ id: null, name: "", location: "", price: "", rating: "", image: "", description: "" });
     setIsModalOpen(true);
   };
 
@@ -26,10 +27,11 @@ export default function HotelsPage() {
     setIsEditing(true);
     setFormData({ 
       id: hotel.id, 
-      name: hotel.name, 
+      name: hotel.title || hotel.name, 
       location: hotel.location, 
-      price: hotel.price || 0, 
+      price: hotel.price_starts_from || hotel.ticket_price || hotel.price_range_min || hotel.price || 0, 
       rating: hotel.rating || "",
+      description: hotel.description || "",
       image: hotel.image 
     });
     setIsModalOpen(true);
@@ -60,21 +62,50 @@ export default function HotelsPage() {
     }
   };
 
+  const uniqueLocations = ['All', ...new Set(hotels.map((item: any) => item.location).filter(Boolean))];
+  const filteredItems = selectedLocation === 'All' ? hotels : hotels.filter((item: any) => item.location === selectedLocation);
+
+  const groupedHotels = filteredItems.reduce((acc: any, hotel: any) => {
+    const loc = hotel.location || 'Unknown Location';
+    if (!acc[loc]) acc[loc] = [];
+    acc[loc].push(hotel);
+    return acc;
+  }, {});
+
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
          <h2 className="text-3xl font-bold text-slate-800">Manage Hotels</h2>
-         <button onClick={openAddModal} className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-bold transition">
+         
+         <div className="flex gap-4 items-center">
+            <select 
+               value={selectedLocation} 
+               onChange={(e) => setSelectedLocation(e.target.value)}
+               className="p-2 border border-slate-200 rounded-lg outline-none bg-white font-medium text-slate-700 shadow-sm"
+            >
+               {uniqueLocations.map(loc => <option key={loc as string} value={loc as string}>{loc === 'All' ? 'All Locations' : loc}</option>)}
+            </select>
+            <button onClick={openAddModal} className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-bold transition">
             <Plus size={20} /> Add New Hotel
          </button>
+         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-         {hotels.map(hotel => (
+      <div className="space-y-12">
+         {Object.entries(groupedHotels).map(([locName, locHotels]: [string, any]) => (
+            <div key={locName}>
+               <div className="flex items-center gap-3 mb-6 border-b border-slate-200 pb-3">
+                  <div className="w-2 h-8 bg-amber-500 rounded-full"></div>
+                  <h3 className="text-2xl font-bold text-slate-800">{locName}</h3>
+                  <span className="text-sm font-medium text-slate-500 bg-slate-100 px-3 py-1 rounded-full">{locHotels.length} Hotels</span>
+               </div>
+               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+         {locHotels.map(hotel=> (
             <div key={hotel.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group">
-               <img src={hotel.image ? (hotel.image.startsWith('/') ? 'http://localhost:5173' + hotel.image : hotel.image) : 'https://via.placeholder.com/400'} alt={hotel.name} className="w-full h-48 object-cover" />
+               <img src={hotel.image ? (hotel.image.startsWith('/') ? 'http://localhost:5173' + hotel.image : hotel.image) : 'https://via.placeholder.com/400'} alt={hotel.title || hotel.name} className="w-full h-48 object-cover" />
                <div className="p-5 flex-1 flex flex-col">
-                  <h3 className="font-bold text-lg text-slate-800 mb-1">{hotel.name}</h3>
+                  <h3 className="font-bold text-lg text-slate-800 mb-1">{hotel.title || hotel.name}</h3>
                   <p className="text-slate-500 text-sm mb-4 line-clamp-2 cursor-pointer" title={hotel.location}>{hotel.location}</p>
                   
                   {hotel.rating && (
@@ -84,7 +115,7 @@ export default function HotelsPage() {
                   )}
 
                   <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-100">
-                     <span className="font-bold text-amber-600">{hotel.price} EGP</span>
+                     <span className="font-bold text-amber-600">{hotel.price_starts_from || hotel.ticket_price || hotel.price_range_min || hotel.price} EGP</span>
                      <div className="flex gap-2">
                          <button onClick={() => openEditModal(hotel)} className="text-blue-500 hover:text-blue-700 bg-blue-50 p-2 rounded-lg transition border border-blue-100">
                             <Edit size={18} />
@@ -98,6 +129,11 @@ export default function HotelsPage() {
             </div>
          ))}
          {hotels.length === 0 && <p className="col-span-3 text-center text-slate-500 p-8">No hotels found.</p>}
+      
+               </div>
+            </div>
+         ))}
+         {hotels.length === 0 && <p className="text-center text-slate-500 p-8">No hotels found.</p>}
       </div>
 
       {/* Modal */}
@@ -130,6 +166,10 @@ export default function HotelsPage() {
                    <div>
                        <label className="block text-sm font-medium text-slate-700 mb-1">Image URL</label>
                        <input type="text" value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. /images/..." />
+                   </div>
+                   <div>
+                       <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                       <textarea rows={3} value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="Enter detailed description..."></textarea>
                    </div>
                    <div className="mt-4 flex justify-end gap-3">
                        <button type="button" onClick={closeModal} className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium transition">Cancel</button>
