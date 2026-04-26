@@ -38,10 +38,12 @@ import NotificationsPage from './pages/NotificationsPage';
 import ChatbotPage from './pages/ChatbotPage';
 // @ts-ignore
 import ReportsPage from './pages/ReportsPage';
+// @ts-ignore
+import LiveChatPage from './pages/LiveChatPage';
 import { 
   Bed, Building2, Map, Utensils, Landmark, CarFront, Store, Ticket, 
   Package, Compass, CalendarDays, ScrollText, Bell, MessageSquare, 
-  Users, LayoutDashboard, Star, Tag, PieChart, Settings
+  Users, LayoutDashboard, Star, Tag, PieChart, Settings, Headset
 } from 'lucide-react';
 
 export default function App() {
@@ -163,6 +165,10 @@ export default function App() {
                 <Link to="/cms" className="flex items-center gap-3 px-3 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-amber-400 rounded-xl transition-all font-medium"><ScrollText size={18} /> Content (CMS)</Link>
                 <Link to="/notifications" className="flex items-center gap-3 px-3 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-amber-400 rounded-xl transition-all font-medium"><Bell size={18} /> Notifications</Link>
                 <Link to="/chatbot" className="flex items-center gap-3 px-3 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-amber-400 rounded-xl transition-all font-medium"><MessageSquare size={18} /> AI Chatbot Logic</Link>
+                <Link to="/livechat" className="flex items-center gap-3 px-3 py-2.5 text-amber-400 hover:bg-slate-800 rounded-xl transition-all font-bold shadow-lg bg-amber-500/10 border-l-4 border-amber-500 relative">
+                   <Headset size={18} /> Live Support
+                   <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                </Link>
               </>
             )}
           </nav>
@@ -207,6 +213,7 @@ export default function App() {
              {userRole === 'superadmin' && <Route path="/notifications" element={<NotificationsPage />} />}
              {userRole === 'superadmin' && <Route path="/chatbot" element={<ChatbotPage />} />}
              {userRole === 'superadmin' && <Route path="/reports" element={<ReportsPage />} />}
+             {userRole === 'superadmin' && <Route path="/livechat" element={<LiveChatPage />} />}
           </Routes>
         </main>
       </div>
