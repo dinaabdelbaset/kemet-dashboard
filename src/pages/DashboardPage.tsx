@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axiosClient from "../axiosClient";
-import { Users, Ticket, Building2, DollarSign, Download, FileText, FileSpreadsheet } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, AreaChart, Area } from 'recharts';
+import { Users, Ticket, Building2, DollarSign, FileText, FileSpreadsheet } from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import * as XLSX from 'xlsx';
