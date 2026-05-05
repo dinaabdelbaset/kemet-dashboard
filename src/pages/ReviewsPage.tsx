@@ -6,7 +6,7 @@ export default function ReviewsPage() {
   const [reviews, setReviews] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({ id: null, title: "", location: "", price: "", duration: "", image: "" });
+  const [formData, setFormData] = useState({ id: null, title: "", location: "", price: "", duration: "", image: "", image_file: null });
 
   const fetchReviews = () => {
     axiosClient.get("/admin/reviews").then((res) => setReviews(res.data));
@@ -18,7 +18,7 @@ export default function ReviewsPage() {
 
   const openAddModal = () => {
     setIsEditing(false);
-    setFormData({ id: null, title: "", location: "", price: "", duration: "", image: "" , description: "" });
+    setFormData({ id: null, title: "", location: "", price: "", duration: "", image: "", image_file: null , description: "" });
     setIsModalOpen(true);
   };
 
@@ -31,7 +31,7 @@ export default function ReviewsPage() {
       location: review.location, 
       price: review.price_starts_from || review.ticket_price || review.price_range_min || review.price, 
       duration: review.duration || "",
-      image: review.image 
+      image: review.image || "", image_file: null 
     });
     setIsModalOpen(true);
   };
@@ -40,11 +40,19 @@ export default function ReviewsPage() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    const submitData = new FormData();
+    Object.keys(formData).forEach(key => {
+      if (formData[key] !== null && formData[key] !== undefined) {
+        submitData.append(key, formData[key]);
+      }
+    });
+
     try {
       if (isEditing) {
-        await axiosClient.put(`/admin/reviews/${formData.id}`, formData);
+        submitData.append('_method', 'PUT');
+        await axiosClient.post(`/admin/reviews/${formData.id}`, submitData, { headers: { 'Content-Type': 'multipart/form-data' } });
       } else {
-        await axiosClient.post(`/admin/reviews`, formData);
+        await axiosClient.post(`/admin/reviews`, submitData, { headers: { 'Content-Type': 'multipart/form-data' } });
       }
       closeModal();
       fetchReviews();
@@ -73,7 +81,7 @@ export default function ReviewsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
          {reviews.map(review => (
             <div key={review.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group">
-               <img src={review.image ? (review.image.startsWith('/') ? 'http://localhost:5173' + review.image : review.image) : 'https://via.placeholder.com/400'} alt={review.title || review.name || review.user_name} className="w-full h-48 object-cover" />
+               <img src={review.image ? (review.image.startsWith('/') ? (import.meta.env.VITE_FRONTEND_URL || 'http://localhost:5173') + review.image : review.image) : 'https://via.placeholder.com/400'} alt={review.title || review.name || review.user_name} className="w-full h-48 object-cover" />
                <div className="p-5 flex-1 flex flex-col">
                   <h3 className="font-bold text-lg text-slate-800 mb-1">{review.title || review.name || review.user_name}</h3>
                   <p className="text-slate-500 text-sm mb-2 line-clamp-2" title={review.location}>{review.location}</p>
@@ -129,9 +137,12 @@ export default function ReviewsPage() {
                        </div>
                    </div>
                    <div>
-                       <label className="block text-sm font-medium text-slate-700 mb-1">Image URL</label>
-                       <input type="text" value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. https://images.unsplash.com/..." />
-                   </div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Image (Upload or URL)</label>
+                        <div className="flex gap-2">
+                           <input type="file" accept="image/*" onChange={e => setFormData({...formData, image_file: e.target.files ? e.target.files[0] : null})} className="w-1/2 p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500 bg-white" />
+                           <input type="text" value={formData.image || ""} onChange={e => setFormData({...formData, image: e.target.value})} className="w-1/2 p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="Or paste image URL..." />
+                        </div>
+                    </div>
                    
                    <div>
                        <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
@@ -148,3 +159,6 @@ export default function ReviewsPage() {
     </div>
   );
 }
+
+
+

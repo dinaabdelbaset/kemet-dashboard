@@ -7,7 +7,7 @@ export default function MuseumsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState('All');
-  const [formData, setFormData] = useState({ id: null, name: "", location: "", price: "", opening_hours: "", image: "", rating: "" });
+  const [formData, setFormData] = useState({ id: null, name: "", location: "", price: "", opening_hours: "", image: "", image_file: null, rating: "" });
 
   const fetchMuseums = () => {
     axiosClient.get("/admin/museums").then((res) => setMuseums(res.data));
@@ -19,7 +19,7 @@ export default function MuseumsPage() {
 
   const openAddModal = () => {
     setIsEditing(false);
-    setFormData({ id: null, name: "", location: "", price: "", opening_hours: "", image: "", rating: "" });
+    setFormData({ id: null, name: "", location: "", price: "", opening_hours: "", image: "", image_file: null, rating: "" });
     setIsModalOpen(true);
   };
 
@@ -31,7 +31,7 @@ export default function MuseumsPage() {
       location: museum.location, 
       price: museum.price || 0, 
       opening_hours: museum.opening_hours || "",
-      image: museum.image,
+      image: museum.image || "", image_file: null,
       rating: museum.rating || ""
     });
     setIsModalOpen(true);
@@ -41,11 +41,19 @@ export default function MuseumsPage() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    const submitData = new FormData();
+    Object.keys(formData).forEach(key => {
+      if (formData[key] !== null && formData[key] !== undefined) {
+        submitData.append(key, formData[key]);
+      }
+    });
+
     try {
       if (isEditing) {
-        await axiosClient.put(`/admin/museums/${formData.id}`, formData);
+        submitData.append('_method', 'PUT');
+        await axiosClient.post(`/admin/museums/${formData.id}`, submitData, { headers: { 'Content-Type': 'multipart/form-data' } });
       } else {
-        await axiosClient.post(`/admin/museums`, formData);
+        await axiosClient.post(`/admin/museums`, submitData, { headers: { 'Content-Type': 'multipart/form-data' } });
       }
       closeModal();
       fetchMuseums();
@@ -94,7 +102,7 @@ export default function MuseumsPage() {
 
          {locItems.map(museum=> (
             <div key={museum.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group">
-               <img src={museum.image ? (museum.image.startsWith('/') ? 'http://localhost:5173' + museum.image : museum.image) : 'https://via.placeholder.com/400'} alt={museum.name} className="w-full h-48 object-cover" />
+               <img src={museum.image ? (museum.image.startsWith('/') ? (import.meta.env.VITE_FRONTEND_URL || 'http://localhost:5173') + museum.image : museum.image) : 'https://via.placeholder.com/400'} alt={museum.name} className="w-full h-48 object-cover" />
                <div className="p-5 flex-1 flex flex-col">
                   <h3 className="font-bold text-lg text-slate-800 mb-1">{museum.name}</h3>
                   <p className="text-slate-500 text-sm mb-2 line-clamp-2" title={museum.location}>{museum.location}</p>
@@ -155,9 +163,12 @@ export default function MuseumsPage() {
                        </div>
                    </div>
                    <div>
-                       <label className="block text-sm font-medium text-slate-700 mb-1">Image URL</label>
-                       <input type="text" value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. /images/GEM.png" />
-                   </div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Image (Upload or URL)</label>
+                        <div className="flex gap-2">
+                           <input type="file" accept="image/*" onChange={e => setFormData({...formData, image_file: e.target.files ? e.target.files[0] : null})} className="w-1/2 p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500 bg-white" />
+                           <input type="text" value={formData.image || ""} onChange={e => setFormData({...formData, image: e.target.value})} className="w-1/2 p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="Or paste image URL..." />
+                        </div>
+                    </div>
                    <div className="mt-4 flex justify-end gap-3">
                        <button type="button" onClick={closeModal} className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium transition">Cancel</button>
                        <button type="submit" className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-bold transition">Save Museum</button>
@@ -169,3 +180,6 @@ export default function MuseumsPage() {
     </div>
   );
 }
+
+
+

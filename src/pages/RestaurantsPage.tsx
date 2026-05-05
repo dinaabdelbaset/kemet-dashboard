@@ -7,7 +7,7 @@ export default function RestaurantsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState('All');
-  const [formData, setFormData] = useState({ id: null, name: "", location: "", price: "", cuisine: "", rating: "", image: "" });
+  const [formData, setFormData] = useState({ id: null, name: "", location: "", price: "", cuisine: "", rating: "", image: "", image_file: null });
 
   const fetchRestaurants = () => {
     axiosClient.get("/admin/restaurants").then((res) => setRestaurants(res.data));
@@ -19,7 +19,7 @@ export default function RestaurantsPage() {
 
   const openAddModal = () => {
     setIsEditing(false);
-    setFormData({ id: null, name: "", location: "", price: "", cuisine: "", rating: "", image: "" });
+    setFormData({ id: null, name: "", location: "", price: "", cuisine: "", rating: "", image: "", image_file: null });
     setIsModalOpen(true);
   };
 
@@ -32,7 +32,7 @@ export default function RestaurantsPage() {
       price: restaurant.price || 0, 
       cuisine: restaurant.cuisine || "",
       rating: restaurant.rating || "",
-      image: restaurant.image 
+      image: restaurant.image || "", image_file: null 
     });
     setIsModalOpen(true);
   };
@@ -41,11 +41,19 @@ export default function RestaurantsPage() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    const submitData = new FormData();
+    Object.keys(formData).forEach(key => {
+      if (formData[key] !== null && formData[key] !== undefined) {
+        submitData.append(key, formData[key]);
+      }
+    });
+
     try {
       if (isEditing) {
-        await axiosClient.put(`/admin/restaurants/${formData.id}`, formData);
+        submitData.append('_method', 'PUT');
+        await axiosClient.post(`/admin/restaurants/${formData.id}`, submitData, { headers: { 'Content-Type': 'multipart/form-data' } });
       } else {
-        await axiosClient.post(`/admin/restaurants`, formData);
+        await axiosClient.post(`/admin/restaurants`, submitData, { headers: { 'Content-Type': 'multipart/form-data' } });
       }
       closeModal();
       fetchRestaurants();
@@ -94,7 +102,7 @@ export default function RestaurantsPage() {
 
          {locItems.map(restaurant=> (
             <div key={restaurant.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group">
-               <img src={restaurant.image ? (restaurant.image.startsWith('/') ? 'http://localhost:5173' + restaurant.image : restaurant.image) : 'https://via.placeholder.com/400'} alt={restaurant.name} className="w-full h-48 object-cover" />
+               <img src={restaurant.image ? (restaurant.image.startsWith('/') ? (import.meta.env.VITE_FRONTEND_URL || 'http://localhost:5173') + restaurant.image : restaurant.image) : 'https://via.placeholder.com/400'} alt={restaurant.name} className="w-full h-48 object-cover" />
                <div className="p-5 flex-1 flex flex-col">
                   <h3 className="font-bold text-lg text-slate-800 mb-1">{restaurant.name}</h3>
                   <p className="text-slate-500 text-sm mb-2 line-clamp-2" title={restaurant.location}>{restaurant.location}</p>
@@ -168,9 +176,12 @@ export default function RestaurantsPage() {
                        </div>
                    </div>
                    <div>
-                       <label className="block text-sm font-medium text-slate-700 mb-1">Image URL</label>
-                       <input type="text" value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. /images/..." />
-                   </div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Image (Upload or URL)</label>
+                        <div className="flex gap-2">
+                           <input type="file" accept="image/*" onChange={e => setFormData({...formData, image_file: e.target.files ? e.target.files[0] : null})} className="w-1/2 p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500 bg-white" />
+                           <input type="text" value={formData.image || ""} onChange={e => setFormData({...formData, image: e.target.value})} className="w-1/2 p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="Or paste image URL..." />
+                        </div>
+                    </div>
                    <div className="mt-4 flex justify-end gap-3">
                        <button type="button" onClick={closeModal} className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium transition">Cancel</button>
                        <button type="submit" className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-bold transition">Save Restaurant</button>
@@ -182,3 +193,6 @@ export default function RestaurantsPage() {
     </div>
   );
 }
+
+
+

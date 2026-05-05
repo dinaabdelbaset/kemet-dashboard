@@ -2,19 +2,19 @@ import { useEffect, useState } from "react";
 import axiosClient from "../axiosClient";
 import { Trash2, Edit, Plus, X } from "lucide-react";
 
-export default function TransportationsPage() {
-  const [transportations, setTransportation] = useState<any[]>([]);
+export default function FlightsPage() {
+  const [Flights, setFlight] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState('All');
   const [formData, setFormData] = useState({ id: null, type: "", route: "", company: "", price: "", duration: "", image: "", image_file: null });
 
-  const fetchTransportation = () => {
-    axiosClient.get("/admin/transportations").then((res) => setTransportation(res.data));
+  const fetchFlight = () => {
+    axiosClient.get("/admin/Flights").then((res) => setFlight(res.data));
   };
 
   useEffect(() => {
-    fetchTransportation();
+    fetchFlight();
   }, []);
 
   const openAddModal = () => {
@@ -23,16 +23,16 @@ export default function TransportationsPage() {
     setIsModalOpen(true);
   };
 
-  const openEditModal = (transportation: any) => {
+  const openEditModal = (Flight: any) => {
     setIsEditing(true);
     setFormData({ 
-      id: transportation.id, 
-      type: transportation.type, 
-      route: transportation.route,
-      company: transportation.company,
-      price: transportation.price, 
-      duration: transportation.duration || "",
-      image: transportation.image || "" || "", image_file: null
+      id: Flight.id, 
+      type: Flight.type, 
+      route: Flight.route,
+      company: Flight.company,
+      price: Flight.price, 
+      duration: Flight.duration || "",
+      image: Flight.image || "" || "", image_file: null
     });
     setIsModalOpen(true);
   };
@@ -51,28 +51,28 @@ export default function TransportationsPage() {
     try {
       if (isEditing) {
         submitData.append('_method', 'PUT');
-        await axiosClient.post(`/admin/transportations/${formData.id}`, submitData, { headers: { 'Content-Type': 'multipart/form-data' } });
+        await axiosClient.post(`/admin/Flights/${formData.id}`, submitData, { headers: { 'Content-Type': 'multipart/form-data' } });
       } else {
-        await axiosClient.post(`/admin/transportations`, submitData, { headers: { 'Content-Type': 'multipart/form-data' } });
+        await axiosClient.post(`/admin/Flights`, submitData, { headers: { 'Content-Type': 'multipart/form-data' } });
       }
       closeModal();
-      fetchTransportations();
+      fetchFlights();
     } catch (err) {
       console.error(err);
-      alert("Error saving transportation!");
+      alert("Error saving Flight!");
     }
   };
 
   const deleteTransport = async (id: number) => {
-    if (confirm("Are you sure you want to delete this transportation?")) {
-      await axiosClient.delete(`/admin/transportations/${id}`);
-      fetchTransportation();
+    if (confirm("Are you sure you want to delete this Flight?")) {
+      await axiosClient.delete(`/admin/Flights/${id}`);
+      fetchFlight();
     }
   };
 
 
-  const uniqueLocations = ['All', ...new Set(transportations.map((item: any) => item.location).filter(Boolean))];
-  const filteredItems = selectedLocation === 'All' ? transportations : transportations.filter((item: any) => item.location === selectedLocation);
+  const uniqueLocations = ['All', ...new Set(Flights.map((item: any) => item.location).filter(Boolean))];
+  const filteredItems = selectedLocation === 'All' ? Flights : Flights.filter((item: any) => item.location === selectedLocation);
 
   const groupedItems = filteredItems.reduce((acc: any, item: any) => {
     const loc = item.location || 'Unknown Location';
@@ -84,7 +84,7 @@ export default function TransportationsPage() {
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
-         <h2 className="text-3xl font-bold text-slate-800">Manage Transportation</h2>
+         <h2 className="text-3xl font-bold text-slate-800">Manage Flight</h2>
          <button onClick={openAddModal} className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-bold transition">
             <Plus size={20} /> Add New Transport
          </button>
@@ -100,50 +100,50 @@ export default function TransportationsPage() {
                </div>
                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-         {locItems.map(transportation=> (
-            <div key={transportation.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group relative">
+         {locItems.map(Flight=> (
+            <div key={Flight.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group relative">
                {/* Fixed missing image representation */}
                <div className="w-full h-48 bg-slate-100 flex items-center justify-center relative overflow-hidden">
-                  {transportation.image ? (
+                  {Flight.image ? (
                      <img 
-                        src={transportation.image.startsWith('/') ? (import.meta.env.VITE_FRONTEND_URL || 'http://localhost:5173') + transportation.image : transportation.image} 
-                        alt={transportation.type} 
+                        src={Flight.image.startsWith('/') ? (import.meta.env.VITE_FRONTEND_URL || 'http://localhost:5173') + Flight.image : Flight.image} 
+                        alt={Flight.type} 
                         className="w-full h-full object-cover" 
                      />
                   ) : (
                      <div className="flex flex-col items-center justify-center text-slate-400">
                         <span className="text-4xl">🚐</span>
-                        <span className="text-xs font-semibold mt-2 uppercase tracking-wide opacity-50">{transportation.type} Image Missing</span>
+                        <span className="text-xs font-semibold mt-2 uppercase tracking-wide opacity-50">{Flight.type} Image Missing</span>
                      </div>
                   )}
                   {/* Floating type badge */}
                   <span className="absolute top-3 left-3 bg-slate-900 text-white text-xs px-3 py-1.5 rounded-full font-bold shadow-md">
-                     {transportation.type}
+                     {Flight.type}
                   </span>
                </div>
                
                <div className="p-5 flex-1 flex flex-col">
                   {/* Use route mapping instead of title */}
-                  <h3 className="font-bold text-lg text-slate-800 mb-1 leading-tight">{transportation.route}</h3>
+                  <h3 className="font-bold text-lg text-slate-800 mb-1 leading-tight">{Flight.route}</h3>
                   
                   {/* Using company instead of location */}
                   <p className="text-slate-500 text-sm mb-3 flex items-center gap-1.5">
-                     <span className="font-semibold text-slate-600">Operator:</span> {transportation.company || 'Unknown'}
+                     <span className="font-semibold text-slate-600">Operator:</span> {Flight.company || 'Unknown'}
                   </p>
                   
-                  {transportation.duration && (
+                  {Flight.duration && (
                      <span className="inline-block px-2.5 py-1 bg-amber-50 text-amber-700 text-xs font-bold rounded-md mb-4 self-start border border-amber-100">
-                        ⏱ {transportation.duration}
+                        ⏱ {Flight.duration}
                      </span>
                   )}
                   
                   <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-100">
-                     <span className="font-bold text-amber-600 text-lg">{transportation.price} EGP</span>
+                     <span className="font-bold text-amber-600 text-lg">{Flight.price} EGP</span>
                      <div className="flex gap-2">
-                         <button onClick={() => openEditModal(transportation)} className="text-blue-500 hover:text-blue-700 bg-blue-50 p-2 rounded-lg transition border border-blue-100">
+                         <button onClick={() => openEditModal(Flight)} className="text-blue-500 hover:text-blue-700 bg-blue-50 p-2 rounded-lg transition border border-blue-100">
                             <Edit size={18} />
                          </button>
-                         <button onClick={() => deleteTransport(transportation.id)} className="text-red-500 hover:text-red-700 bg-red-50 p-2 rounded-lg transition border border-red-100">
+                         <button onClick={() => deleteTransport(Flight.id)} className="text-red-500 hover:text-red-700 bg-red-50 p-2 rounded-lg transition border border-red-100">
                             <Trash2 size={18} />
                          </button>
                      </div>
@@ -156,7 +156,7 @@ export default function TransportationsPage() {
                </div>
             </div>
          ))}
-         {transportations.length === 0 && <p className="text-center text-slate-500 p-8">No items found.</p>}
+         {Flights.length === 0 && <p className="text-center text-slate-500 p-8">No items found.</p>}
       </div>
 
       {/* Modal */}
@@ -209,6 +209,7 @@ export default function TransportationsPage() {
     </div>
   );
 }
+
 
 
 

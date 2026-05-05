@@ -6,7 +6,7 @@ export default function TravelPackagesPage() {
   const [travelpackages, setTravelPackages] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({ id: null, title: "", date: "", price: "", duration: "", image: "" });
+  const [formData, setFormData] = useState({ id: null, title: "", date: "", price: "", duration: "", image: "", image_file: null });
 
   const fetchTravelPackages = () => {
     axiosClient.get("/admin/travelpackages").then((res) => setTravelPackages(res.data));
@@ -18,7 +18,7 @@ export default function TravelPackagesPage() {
 
   const openAddModal = () => {
     setIsEditing(false);
-    setFormData({ id: null, title: "", date: "", price: "", duration: "", image: "" , description: "" });
+    setFormData({ id: null, title: "", date: "", price: "", duration: "", image: "", image_file: null , description: "" });
     setIsModalOpen(true);
   };
 
@@ -31,7 +31,7 @@ export default function TravelPackagesPage() {
       date: travelpackage.date || "", 
       price: travelpackage.price_starts_from || travelpackage.ticket_price || travelpackage.price_range_min || travelpackage.price || 0, 
       duration: travelpackage.duration || "",
-      image: travelpackage.image 
+      image: travelpackage.image || "", image_file: null 
     });
     setIsModalOpen(true);
   };
@@ -40,11 +40,19 @@ export default function TravelPackagesPage() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    const submitData = new FormData();
+    Object.keys(formData).forEach(key => {
+      if (formData[key] !== null && formData[key] !== undefined) {
+        submitData.append(key, formData[key]);
+      }
+    });
+
     try {
       if (isEditing) {
-        await axiosClient.put(`/admin/travelpackages/${formData.id}`, formData);
+        submitData.append('_method', 'PUT');
+        await axiosClient.post(`/admin/travelpackages/${formData.id}`, submitData, { headers: { 'Content-Type': 'multipart/form-data' } });
       } else {
-        await axiosClient.post(`/admin/travelpackages`, formData);
+        await axiosClient.post(`/admin/travelpackages`, submitData, { headers: { 'Content-Type': 'multipart/form-data' } });
       }
       closeModal();
       fetchTravelPackages();
@@ -73,7 +81,7 @@ export default function TravelPackagesPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
          {travelpackages.map(pkg => (
             <div key={pkg.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group">
-               <img src={pkg.image ? (pkg.image.startsWith('/') ? 'http://localhost:5173' + pkg.image : pkg.image) : 'https://via.placeholder.com/400'} alt={pkg.title} className="w-full h-48 object-cover" />
+               <img src={pkg.image ? (pkg.image.startsWith('/') ? (import.meta.env.VITE_FRONTEND_URL || 'http://localhost:5173') + pkg.image : pkg.image) : 'https://via.placeholder.com/400'} alt={pkg.title} className="w-full h-48 object-cover" />
                <div className="p-5 flex-1 flex flex-col">
                   <h3 className="font-bold text-lg text-slate-800 mb-1">{pkg.title}</h3>
                   <p className="text-slate-500 text-sm mb-2 line-clamp-2" title={pkg.date}>📅 {pkg.date}</p>
@@ -129,9 +137,12 @@ export default function TravelPackagesPage() {
                        </div>
                    </div>
                    <div>
-                       <label className="block text-sm font-medium text-slate-700 mb-1">Image URL</label>
-                       <input type="text" value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. /images/..." />
-                   </div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Image (Upload or URL)</label>
+                        <div className="flex gap-2">
+                           <input type="file" accept="image/*" onChange={e => setFormData({...formData, image_file: e.target.files ? e.target.files[0] : null})} className="w-1/2 p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500 bg-white" />
+                           <input type="text" value={formData.image || ""} onChange={e => setFormData({...formData, image: e.target.value})} className="w-1/2 p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="Or paste image URL..." />
+                        </div>
+                    </div>
                    
                    <div>
                        <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
@@ -148,3 +159,6 @@ export default function TravelPackagesPage() {
     </div>
   );
 }
+
+
+

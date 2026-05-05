@@ -7,7 +7,7 @@ export default function HotelsPage() {
   const [selectedLocation, setSelectedLocation] = useState('All');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({ id: null, name: "", location: "", price: "", rating: "", image: "", description: "" });
+  const [formData, setFormData] = useState<any>({ id: null, name: "", location: "", price: "", rating: "", image: "", image_file: null, description: "" });
 
   const fetchHotels = () => {
     axiosClient.get("/admin/hotels").then((res) => setHotels(res.data));
@@ -19,7 +19,7 @@ export default function HotelsPage() {
 
   const openAddModal = () => {
     setIsEditing(false);
-    setFormData({ id: null, name: "", location: "", price: "", rating: "", image: "", description: "" });
+    setFormData({ id: null, name: "", location: "", price: "", rating: "", image: "", image_file: null, description: "" });
     setIsModalOpen(true);
   };
 
@@ -32,7 +32,8 @@ export default function HotelsPage() {
       price: hotel.price_starts_from || hotel.ticket_price || hotel.price_range_min || hotel.price || 0, 
       rating: hotel.rating || "",
       description: hotel.description || "",
-      image: hotel.image 
+      image: hotel.image || "",
+      image_file: null
     });
     setIsModalOpen(true);
   };
@@ -41,11 +42,23 @@ export default function HotelsPage() {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    const submitData = new FormData();
+    Object.keys(formData).forEach(key => {
+      if (formData[key] !== null && formData[key] !== undefined) {
+        submitData.append(key, formData[key]);
+      }
+    });
+
     try {
       if (isEditing) {
-        await axiosClient.put(`/admin/hotels/${formData.id}`, formData);
+        submitData.append('_method', 'PUT');
+        await axiosClient.post(`/admin/hotels/${formData.id}`, submitData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
       } else {
-        await axiosClient.post(`/admin/hotels`, formData);
+        await axiosClient.post(`/admin/hotels`, submitData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
       }
       closeModal();
       fetchHotels();
@@ -103,7 +116,7 @@ export default function HotelsPage() {
 
          {locHotels.map(hotel=> (
             <div key={hotel.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group">
-               <img src={hotel.image ? (hotel.image.startsWith('/') ? 'http://localhost:5173' + hotel.image : hotel.image) : 'https://via.placeholder.com/400'} alt={hotel.title || hotel.name} className="w-full h-48 object-cover" />
+               <img src={hotel.image ? (hotel.image.startsWith('/') ? (import.meta.env.VITE_FRONTEND_URL || 'http://localhost:5173') + hotel.image : hotel.image) : 'https://via.placeholder.com/400'} alt={hotel.title || hotel.name} className="w-full h-48 object-cover" />
                <div className="p-5 flex-1 flex flex-col">
                   <h3 className="font-bold text-lg text-slate-800 mb-1">{hotel.title || hotel.name}</h3>
                   <p className="text-slate-500 text-sm mb-4 line-clamp-2 cursor-pointer" title={hotel.location}>{hotel.location}</p>
@@ -182,3 +195,5 @@ export default function HotelsPage() {
     </div>
   );
 }
+
+

@@ -23,7 +23,7 @@ export default function OffersPage({ userRole }: { userRole?: string }) {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({ id: null, title: "", locations: "", price: "", category: "", rating: "", image: "" });
+  const [formData, setFormData] = useState({ id: null, title: "", locations: "", price: "", category: "", rating: "", image: "", image_file: null });
 
   const fetchOffers = () => {
     axiosClient.get("/admin/deals").then((res) => setOffers(res.data));
@@ -35,7 +35,7 @@ export default function OffersPage({ userRole }: { userRole?: string }) {
 
   const openAddModal = () => {
     setIsEditing(false);
-    setFormData({ id: null, title: "", locations: "", price: "", category: "", rating: "", image: "" , description: "" });
+    setFormData({ id: null, title: "", locations: "", price: "", category: "", rating: "", image: "", image_file: null , description: "" });
     setIsModalOpen(true);
   };
 
@@ -49,7 +49,7 @@ export default function OffersPage({ userRole }: { userRole?: string }) {
       price: offer.price || "", 
       category: offer.category || "",
       rating: offer.rating || "",
-      image: offer.image || ""
+      image: offer.image || "" || "", image_file: null
     });
     setIsModalOpen(true);
   };
@@ -58,11 +58,19 @@ export default function OffersPage({ userRole }: { userRole?: string }) {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    const submitData = new FormData();
+    Object.keys(formData).forEach(key => {
+      if (formData[key] !== null && formData[key] !== undefined) {
+        submitData.append(key, formData[key]);
+      }
+    });
+
     try {
       if (isEditing) {
-        await axiosClient.put(`/admin/deals/${formData.id}`, formData);
+        submitData.append('_method', 'PUT');
+        await axiosClient.post(`/admin/deals/${formData.id}`, submitData, { headers: { 'Content-Type': 'multipart/form-data' } });
       } else {
-        await axiosClient.post(`/admin/deals`, formData);
+        await axiosClient.post(`/admin/deals`, submitData, { headers: { 'Content-Type': 'multipart/form-data' } });
       }
       closeModal();
       fetchOffers();
@@ -91,7 +99,7 @@ export default function OffersPage({ userRole }: { userRole?: string }) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
          {visibleDeals.map(offer => (
             <div key={offer.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group">
-               <img src={offer.image ? (offer.image.startsWith('/') ? 'http://localhost:5173' + offer.image : offer.image) : 'https://via.placeholder.com/400'} alt={offer.title} className="w-full h-48 object-cover" />
+               <img src={offer.image ? (offer.image.startsWith('/') ? (import.meta.env.VITE_FRONTEND_URL || 'http://localhost:5173') + offer.image : offer.image) : 'https://via.placeholder.com/400'} alt={offer.title} className="w-full h-48 object-cover" />
                <div className="p-5 flex-1 flex flex-col">
                   <div className="flex items-center gap-2 mb-2">
                      {offer.category && <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full">{offer.category}</span>}
@@ -154,9 +162,12 @@ export default function OffersPage({ userRole }: { userRole?: string }) {
                        <input type="text" value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. Historical" />
                    </div>
                    <div>
-                       <label className="block text-sm font-medium text-slate-700 mb-1">Image URL</label>
-                       <input type="text" value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="e.g. /images/..." />
-                   </div>
+                        <label className="block text-sm font-medium text-slate-700 mb-1">Image (Upload or URL)</label>
+                        <div className="flex gap-2">
+                           <input type="file" accept="image/*" onChange={e => setFormData({...formData, image_file: e.target.files ? e.target.files[0] : null})} className="w-1/2 p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500 bg-white" />
+                           <input type="text" value={formData.image || ""} onChange={e => setFormData({...formData, image: e.target.value})} className="w-1/2 p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="Or paste image URL..." />
+                        </div>
+                    </div>
                    
                    <div>
                        <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
@@ -173,3 +184,6 @@ export default function OffersPage({ userRole }: { userRole?: string }) {
     </div>
   );
 }
+
+
+

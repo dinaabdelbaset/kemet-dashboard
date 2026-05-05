@@ -22,6 +22,7 @@ import EventsPage from './pages/EventsPage';
 import BazaarsPage from './pages/BazaarsPage';
 // @ts-ignore
 import TransportationsPage from './pages/TransportationsPage';
+import FlightsPage from './pages/FlightsPage';
 // @ts-ignore
 import TravelPackagesPage from './pages/TravelPackagesPage';
 // @ts-ignore
@@ -41,13 +42,13 @@ import ReportsPage from './pages/ReportsPage';
 // @ts-ignore
 import LiveChatPage from './pages/LiveChatPage';
 import { 
-  Bed, Building2, Map, Utensils, Landmark, CarFront, Store, Ticket, 
+  Bed, Building2, Map, Utensils, Landmark, CarFront, Store, Ticket, Plane,
   Package, Compass, CalendarDays, ScrollText, Bell, MessageSquare, 
   Users, LayoutDashboard, Star, Tag, PieChart, Settings, Headset
 } from 'lucide-react';
 
 export default function App() {
-  const [userRole, setUserRole] = useState<'superadmin' | 'hotel' | 'restaurant' | 'tour' | 'safari' | 'museum' | 'event' | 'bazaar' | 'transport' | null>(null);
+  const [userRole, setUserRole] = useState<'superadmin' | 'hotel' | 'restaurant' | 'tour' | 'safari' | 'museum' | 'event' | 'bazaar' | 'transport' | 'flight' | null>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -64,6 +65,7 @@ export default function App() {
       'event@kemat.com': 'event',
       'bazaar@kemat.com': 'bazaar',
       'transport@kemat.com': 'transport',
+      'flight@kemat.com': 'flight',
     };
 
     if (password === 'password123' && roleMap[email]) {
@@ -109,6 +111,7 @@ export default function App() {
               <li className="flex justify-between items-center bg-white p-2 rounded border border-slate-100 shadow-sm"><span className="flex items-center gap-2">🎉 <b>Events</b></span> <span className="text-pink-600">event@kemat.com</span></li>
               <li className="flex justify-between items-center bg-white p-2 rounded border border-slate-100 shadow-sm"><span className="flex items-center gap-2">🛍️ <b>Bazaars</b></span> <span className="text-rose-600">bazaar@kemat.com</span></li>
               <li className="flex justify-between items-center bg-white p-2 rounded border border-slate-100 shadow-sm"><span className="flex items-center gap-2">🚌 <b>Transport</b></span> <span className="text-indigo-600">transport@kemat.com</span></li>
+              <li className="flex justify-between items-center bg-white p-2 rounded border border-slate-100 shadow-sm"><span className="flex items-center gap-2">✈️ <b>Flights</b></span> <span className="text-sky-600">flight@kemat.com</span></li>
             </ul>
             <p className="mt-3 text-center border-t border-slate-200 pt-3 sticky bottom-0 bg-slate-50">Password for all: <strong>password123</strong></p>
           </div>
@@ -142,6 +145,7 @@ export default function App() {
             {(userRole === 'superadmin' || userRole === 'restaurant') && <Link to="/restaurants" className="flex items-center gap-3 px-3 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-amber-400 rounded-xl transition-all font-medium"><Utensils size={18} /> {userRole === 'restaurant' ? 'My Restaurant' : 'Restaurants'}</Link>}
             {(userRole === 'superadmin' || userRole === 'museum') && <Link to="/museums" className="flex items-center gap-3 px-3 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-amber-400 rounded-xl transition-all font-medium"><Landmark size={18} /> {userRole === 'museum' ? 'My Museum' : 'Museums'}</Link>}
             {(userRole === 'superadmin' || userRole === 'transport') && <Link to="/transportations" className="flex items-center gap-3 px-3 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-amber-400 rounded-xl transition-all font-medium"><CarFront size={18} /> {userRole === 'transport' ? 'My Fleet' : 'Transportation'}</Link>}
+            {(userRole === 'superadmin' || userRole === 'flight') && <Link to="/flights" className="flex items-center gap-3 px-3 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-amber-400 rounded-xl transition-all font-medium"><Plane size={18} /> {userRole === 'flight' ? 'My Flights' : 'Flights'}</Link>}
             {(userRole === 'superadmin' || userRole === 'bazaar') && <Link to="/bazaars" className="flex items-center gap-3 px-3 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-amber-400 rounded-xl transition-all font-medium"><Store size={18} /> {userRole === 'bazaar' ? 'My Bazaar' : 'Bazaars / Souqs'}</Link>}
 
             {(userRole === 'superadmin' || ['tour', 'safari', 'event'].includes(userRole)) && (
@@ -203,6 +207,7 @@ export default function App() {
              {(userRole === 'superadmin' || userRole === 'event') && <Route path="/events" element={<EventsPage />} />}
              {(userRole === 'superadmin' || userRole === 'bazaar') && <Route path="/bazaars" element={<BazaarsPage />} />}
              {(userRole === 'superadmin' || userRole === 'transport') && <Route path="/transportations" element={<TransportationsPage />} />}
+             {(userRole === 'superadmin' || userRole === 'flight') && <Route path="/flights" element={<FlightsPage />} />}
           
              {userRole === 'superadmin' && <Route path="/travelpackages" element={<TravelPackagesPage />} />}
              <Route path="/reviews" element={<ReviewsPage />} />
