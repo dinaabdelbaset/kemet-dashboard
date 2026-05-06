@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { useState } from 'react';
+import logoImg from './assets/logo.png';
 import DashboardPage from './pages/DashboardPage';
 // @ts-ignore
 import UsersPage from './pages/UsersPage';
@@ -79,7 +80,10 @@ export default function App() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-900 font-sans py-10">
         <form onSubmit={handleLogin} className="bg-white p-8 rounded-2xl shadow-2xl w-[450px] space-y-6">
-          <div className="text-center">
+          <div className="text-center flex flex-col items-center">
+            <div className="bg-white w-24 h-24 rounded-2xl flex items-center justify-center shadow-[0_8px_24px_rgba(212,175,55,0.25)] border-2 border-amber-500/20 p-2 mb-4">
+              <img src={logoImg} alt="Kemet Logo" className="w-full h-full object-contain" />
+            </div>
             <h1 className="text-3xl font-black text-amber-500 tracking-wider mb-2">KEMET ADMIN</h1>
             <p className="text-slate-500 text-sm font-medium">Log in to your vendor or admin dashboard</p>
           </div>
@@ -126,8 +130,13 @@ export default function App() {
     <BrowserRouter>
       <div className="flex h-screen bg-gray-100 font-sans">
         <aside className="w-64 bg-slate-900 text-white flex flex-col overflow-y-auto shadow-2xl z-10 border-r border-slate-800 scrollbar-thin scrollbar-thumb-slate-700">
-          <div className="p-6">
-            <h1 className="text-2xl font-black text-amber-500 tracking-wider">KEMET ADMIN</h1>
+          <div className="p-6 pb-2">
+            <div className="flex items-center gap-3">
+              <div className="bg-white w-12 h-12 rounded-xl flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.5)] border border-amber-500/30 p-1 shrink-0">
+                <img src={logoImg} alt="Kemet Logo" className="w-full h-full object-contain" />
+              </div>
+              <h1 className="text-[20px] font-black text-amber-500 tracking-widest leading-tight">KEMET<br/><span className="text-[12px] text-white/80 tracking-[0.2em]">ADMIN</span></h1>
+            </div>
             <div className="mt-3 inline-flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700">
               <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
               <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">{userRole}</span>
