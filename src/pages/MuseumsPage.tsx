@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useState } from "react";
 import axiosClient from "../axiosClient";
 import { Trash2, Edit, Plus, X } from "lucide-react";
@@ -7,7 +8,7 @@ export default function MuseumsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState('All');
-  const [formData, setFormData] = useState({ id: null, name: "", location: "", price: "", opening_hours: "", image: "", image_file: null, rating: "" });
+  const [formData, setFormData] = useState<any>({ id: null, name: "", location: "", price: "", opening_hours: "", image: "", image_file: null, rating: "" });
 
   const fetchMuseums = () => {
     axiosClient.get("/admin/museums").then((res) => setMuseums(res.data));

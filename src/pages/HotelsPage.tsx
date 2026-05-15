@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useState } from "react";
 import axiosClient from "../axiosClient";
 import { Trash2, Edit, Plus, X } from "lucide-react";

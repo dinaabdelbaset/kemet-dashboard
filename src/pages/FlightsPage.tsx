@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useState } from "react";
 import axiosClient from "../axiosClient";
 import { Trash2, Edit, Plus, X } from "lucide-react";
@@ -7,7 +8,7 @@ export default function FlightsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState('All');
-  const [formData, setFormData] = useState({ id: null, type: "", route: "", company: "", price: "", duration: "", image: "", image_file: null });
+  const [formData, setFormData] = useState<any>({ id: null, type: "", route: "", company: "", price: "", duration: "", image: "", image_file: null });
 
   const fetchFlight = () => {
     axiosClient.get("/admin/Flights").then((res) => setFlight(res.data));

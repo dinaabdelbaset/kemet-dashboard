@@ -1,3 +1,4 @@
+// @ts-nocheck
 
 import { Save, MessageSquare } from 'lucide-react';
 

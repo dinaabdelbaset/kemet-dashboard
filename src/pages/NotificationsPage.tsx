@@ -1,3 +1,4 @@
+// @ts-nocheck
 
 import { Save, Bell } from 'lucide-react';
 

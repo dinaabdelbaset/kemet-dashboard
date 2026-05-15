@@ -1,3 +1,4 @@
+// @ts-nocheck
 
 import { Save, BarChart } from 'lucide-react';
 

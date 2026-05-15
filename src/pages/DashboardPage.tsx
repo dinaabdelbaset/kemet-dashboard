@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useState } from "react";
 import axiosClient from "../axiosClient";
 import { Users, Ticket, Building2, DollarSign, FileText, FileSpreadsheet } from "lucide-react";

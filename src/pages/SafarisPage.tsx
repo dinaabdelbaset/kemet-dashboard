@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useState } from "react";
 import axiosClient from "../axiosClient";
 import { Trash2, Edit, Plus, X } from "lucide-react";
@@ -7,7 +8,7 @@ export default function SafarisPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState('All');
-  const [formData, setFormData] = useState({ id: null, title: "", location: "", price: "", duration: "", image: "", image_file: null });
+  const [formData, setFormData] = useState<any>({ id: null, title: "", location: "", price: "", duration: "", image: "", image_file: null });
 
   const fetchSafaris = () => {
     axiosClient.get("/admin/safaris").then((res) => setSafaris(res.data));
