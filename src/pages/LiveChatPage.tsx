@@ -23,6 +23,7 @@ const AdminLiveChatPage: React.FC = () => {
   const [selectedSession, setSelectedSession] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState("");
+  const [isSending, setIsSending] = useState(false);
 
   const fetchSessions = async () => {
     try {
@@ -67,7 +68,9 @@ const AdminLiveChatPage: React.FC = () => {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputMessage.trim() || !selectedSession) return;
+    if (!inputMessage.trim() || !selectedSession || isSending) return;
+
+    setIsSending(true);
 
     try {
       await fetch(`${API_BASE}/livechat/sessions/${selectedSession}/reply`, {
@@ -79,6 +82,8 @@ const AdminLiveChatPage: React.FC = () => {
       fetchMessages(selectedSession);
     } catch (e) {
       console.error("Failed to send message", e);
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -163,7 +168,7 @@ const AdminLiveChatPage: React.FC = () => {
               />
               <button 
                 type="submit"
-                disabled={!inputMessage.trim()}
+                disabled={!inputMessage.trim() || isSending}
                 className="px-6 py-3 bg-[#05073C] text-white rounded-lg hover:bg-blue-900 transition disabled:opacity-50"
               >
                 إرسال
@@ -182,4 +187,6 @@ const AdminLiveChatPage: React.FC = () => {
 };
 
 export default AdminLiveChatPage;
+
+
 
