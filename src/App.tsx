@@ -8,9 +8,9 @@ import UsersPage from './pages/UsersPage';
 import BookingsPage from './pages/BookingsPage';
 // @ts-ignore
 import RoomsPage from "./pages/RoomsPage";
-import HotelsPage from './pages/HotelsPage'; 
+import HotelsPage from './pages/HotelsPage';
 // @ts-ignore
-import ToursPage from './pages/ToursPage'; 
+import ToursPage from './pages/ToursPage';
 // @ts-ignore
 import SafarisPage from './pages/SafarisPage';
 // @ts-ignore
@@ -42,9 +42,9 @@ import ChatbotPage from './pages/ChatbotPage';
 import ReportsPage from './pages/ReportsPage';
 // @ts-ignore
 import LiveChatPage from './pages/LiveChatPage';
-import { 
+import {
   Bed, Building2, Map, Utensils, Landmark, CarFront, Store, Ticket, Plane,
-  Package, Compass, CalendarDays, ScrollText, Bell, MessageSquare, 
+  Package, Compass, CalendarDays, ScrollText, Bell, MessageSquare,
   Users, LayoutDashboard, Star, Tag, PieChart, Settings, Headset
 } from 'lucide-react';
 
@@ -87,9 +87,9 @@ export default function App() {
             <h1 className="text-3xl font-black text-amber-500 tracking-wider mb-2">KEMET ADMIN</h1>
             <p className="text-slate-500 text-sm font-medium">Log in to your vendor or admin dashboard</p>
           </div>
-          
+
           {error && <div className="bg-red-50 text-red-500 p-3 rounded-xl text-center text-sm font-bold border border-red-100">{error}</div>}
-          
+
           <div className="space-y-4">
             <div>
               <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">Email Address</label>
@@ -100,9 +100,9 @@ export default function App() {
               <input type="password" value={password} onChange={e => setPassword(e.target.value)} className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:border-amber-500 focus:ring-4 focus:ring-amber-500/20 outline-none transition-all font-medium" placeholder="••••••••" required />
             </div>
           </div>
-          
+
           <button type="submit" className="w-full bg-amber-500 hover:bg-amber-600 text-white font-black uppercase tracking-wider py-3.5 rounded-xl transition-all shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 hover:-translate-y-0.5">Sign In</button>
-          
+
           <div className="mt-6 text-xs text-slate-500 bg-slate-50 p-4 rounded-xl border border-slate-100 h-48 overflow-y-auto">
             <p className="font-bold text-slate-700 mb-2 uppercase tracking-wide sticky top-0 bg-slate-50 py-1">Demo Accounts (For Video)</p>
             <ul className="space-y-2 font-medium">
@@ -135,14 +135,14 @@ export default function App() {
               <div className="bg-white w-12 h-12 rounded-xl flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.5)] border border-amber-500/30 p-1 shrink-0">
                 <img src={logoImg} alt="Kemet Logo" className="w-full h-full object-contain" />
               </div>
-              <h1 className="text-[20px] font-black text-amber-500 tracking-widest leading-tight">KEMET<br/><span className="text-[12px] text-white/80 tracking-[0.2em]">ADMIN</span></h1>
+              <h1 className="text-[20px] font-black text-amber-500 tracking-widest leading-tight">KEMET<br /><span className="text-[12px] text-white/80 tracking-[0.2em]">ADMIN</span></h1>
             </div>
             <div className="mt-3 inline-flex items-center gap-2 bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700">
               <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
               <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">{userRole}</span>
             </div>
           </div>
-          
+
           <nav className="flex-1 px-4 space-y-1 pb-6 text-sm">
             <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest mt-4 mb-2 px-3">Overview</p>
             <Link to="/" className="flex items-center gap-3 px-3 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-amber-400 rounded-xl transition-all font-medium"><LayoutDashboard size={18} /> Dashboard</Link>
@@ -179,13 +179,13 @@ export default function App() {
                 <Link to="/notifications" className="flex items-center gap-3 px-3 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-amber-400 rounded-xl transition-all font-medium"><Bell size={18} /> Notifications</Link>
                 <Link to="/chatbot" className="flex items-center gap-3 px-3 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-amber-400 rounded-xl transition-all font-medium"><MessageSquare size={18} /> AI Chatbot Logic</Link>
                 <Link to="/livechat" className="flex items-center gap-3 px-3 py-2.5 text-amber-400 hover:bg-slate-800 rounded-xl transition-all font-bold shadow-lg bg-amber-500/10 border-l-4 border-amber-500 relative">
-                   <Headset size={18} /> Live Support
-                   <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                  <Headset size={18} /> Live Support
+                  <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
                 </Link>
               </>
             )}
           </nav>
-          
+
           <div className="p-4 border-t border-slate-800/50 mt-auto">
             <div className="flex items-center gap-3 mb-4 px-2">
               <div className="w-8 h-8 shrink-0 rounded-full bg-gradient-to-tr from-amber-400 to-orange-500 flex items-center justify-center font-bold text-white shadow-lg">
@@ -203,31 +203,31 @@ export default function App() {
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto w-full p-8 bg-slate-50/50">
           <Routes>
-             <Route path="/" element={<DashboardPage />} />
-             {userRole === 'superadmin' && <Route path="/users" element={<UsersPage />} />}
-             <Route path="/bookings" element={<BookingsPage />} />
-             
-             {(userRole === 'superadmin' || userRole === 'hotel') && <Route path="/hotels" element={<HotelsPage />} />}
-             {(userRole === 'superadmin' || userRole === 'hotel') && <Route path="/rooms" element={<RoomsPage />} />}
-             {(userRole === 'superadmin' || userRole === 'tour') && <Route path="/tours" element={<ToursPage />} />}
-             {(userRole === 'superadmin' || userRole === 'safari') && <Route path="/safaris" element={<SafarisPage />} />}
-             {(userRole === 'superadmin' || userRole === 'restaurant') && <Route path="/restaurants" element={<RestaurantsPage />} />}
-             {(userRole === 'superadmin' || userRole === 'museum') && <Route path="/museums" element={<MuseumsPage />} />}
-             {(userRole === 'superadmin' || userRole === 'event') && <Route path="/events" element={<EventsPage />} />}
-             {(userRole === 'superadmin' || userRole === 'bazaar') && <Route path="/bazaars" element={<BazaarsPage />} />}
-             {(userRole === 'superadmin' || userRole === 'transport') && <Route path="/transportations" element={<TransportationsPage />} />}
-             {(userRole === 'superadmin' || userRole === 'flight') && <Route path="/flights" element={<FlightsPage />} />}
-          
-             {userRole === 'superadmin' && <Route path="/travelpackages" element={<TravelPackagesPage />} />}
-             <Route path="/reviews" element={<ReviewsPage />} />
-             <Route path="/offers" element={<OffersPage userRole={userRole} />} />
-             
-             {userRole === 'superadmin' && <Route path="/settings" element={<SettingsPage />} />}
-             {userRole === 'superadmin' && <Route path="/cms" element={<CMSPage />} />}
-             {userRole === 'superadmin' && <Route path="/notifications" element={<NotificationsPage />} />}
-             {userRole === 'superadmin' && <Route path="/chatbot" element={<ChatbotPage />} />}
-             {userRole === 'superadmin' && <Route path="/reports" element={<ReportsPage />} />}
-             {userRole === 'superadmin' && <Route path="/livechat" element={<LiveChatPage />} />}
+            <Route path="/" element={<DashboardPage />} />
+            {userRole === 'superadmin' && <Route path="/users" element={<UsersPage />} />}
+            <Route path="/bookings" element={<BookingsPage />} />
+
+            {(userRole === 'superadmin' || userRole === 'hotel') && <Route path="/hotels" element={<HotelsPage />} />}
+            {(userRole === 'superadmin' || userRole === 'hotel') && <Route path="/rooms" element={<RoomsPage />} />}
+            {(userRole === 'superadmin' || userRole === 'tour') && <Route path="/tours" element={<ToursPage />} />}
+            {(userRole === 'superadmin' || userRole === 'safari') && <Route path="/safaris" element={<SafarisPage />} />}
+            {(userRole === 'superadmin' || userRole === 'restaurant') && <Route path="/restaurants" element={<RestaurantsPage />} />}
+            {(userRole === 'superadmin' || userRole === 'museum') && <Route path="/museums" element={<MuseumsPage />} />}
+            {(userRole === 'superadmin' || userRole === 'event') && <Route path="/events" element={<EventsPage />} />}
+            {(userRole === 'superadmin' || userRole === 'bazaar') && <Route path="/bazaars" element={<BazaarsPage />} />}
+            {(userRole === 'superadmin' || userRole === 'transport') && <Route path="/transportations" element={<TransportationsPage />} />}
+            {(userRole === 'superadmin' || userRole === 'flight') && <Route path="/flights" element={<FlightsPage />} />}
+
+            {userRole === 'superadmin' && <Route path="/travelpackages" element={<TravelPackagesPage />} />}
+            <Route path="/reviews" element={<ReviewsPage />} />
+            <Route path="/offers" element={<OffersPage userRole={userRole} />} />
+
+            {userRole === 'superadmin' && <Route path="/settings" element={<SettingsPage />} />}
+            {userRole === 'superadmin' && <Route path="/cms" element={<CMSPage />} />}
+            {userRole === 'superadmin' && <Route path="/notifications" element={<NotificationsPage />} />}
+            {userRole === 'superadmin' && <Route path="/chatbot" element={<ChatbotPage />} />}
+            {userRole === 'superadmin' && <Route path="/reports" element={<ReportsPage />} />}
+            {userRole === 'superadmin' && <Route path="/livechat" element={<LiveChatPage />} />}
           </Routes>
         </main>
       </div>
