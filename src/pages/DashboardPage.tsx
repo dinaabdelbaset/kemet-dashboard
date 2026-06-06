@@ -6,12 +6,16 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import * as XLSX from 'xlsx';
+import ThreeGlobe from "../components/ThreeGlobe";
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<any>(null);
   const [bookings, setBookings] = useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterType, setFilterType] = useState('all');
+  const [filterStatus, setFilterStatus] = useState('all');
 
-  useEffect(() => {
+  const fetchData = () => {
     Promise.all([
       axiosClient.get("/admin/stats"),
       axiosClient.get("/admin/bookings")
@@ -21,18 +25,65 @@ export default function DashboardPage() {
     }).catch(err => {
       console.error("Error loading dashboard data:", err);
     });
+  };
+
+  useEffect(() => {
+    fetchData(); // Initial fetch
+    
+    // Set up live auto-polling every 5 seconds for the presentation
+    const interval = setInterval(() => {
+      fetchData();
+    }, 5000);
+
+    return () => clearInterval(interval); // Cleanup on unmount
   }, []);
 
   if (!stats) return <p>Loading state...</p>;
 
+  // Derived filtered bookings
+  const filteredBookings = bookings.filter((b) => {
+    const userName = b.user?.name || (b.user?.first_name ? `${b.user.first_name} ${b.user.last_name || ''}` : 'Guest');
+    const matchSearch =
+      searchQuery === '' ||
+      userName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (b.item_title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      String(b.id).includes(searchQuery);
+    const matchType = filterType === 'all' || (b.booking_type || b.item_type || '').toLowerCase() === filterType;
+    const matchStatus = filterStatus === 'all' || (b.status || 'confirmed') === filterStatus;
+    return matchSearch && matchType && matchStatus;
+  });
+
+  // All service types available on the Kemet website
+  const ALL_SERVICE_TYPES = [
+    { value: 'hotel',           label: '🏨 فندق (Hotel)' },
+    { value: 'tour',            label: '🗺️ جولة سياحية (Tour)' },
+    { value: 'safari',          label: '🐪 سفاري (Safari)' },
+    { value: 'flight',          label: '✈️ طيران (Flight)' },
+    { value: 'restaurant',      label: '🍽️ مطعم (Restaurant)' },
+    { value: 'museum',          label: '🏛️ متحف (Museum)' },
+    { value: 'event',           label: '🎭 حدث / فعالية (Event)' },
+    { value: 'bazaar',          label: '🛍️ سوق / بازار (Bazaar)' },
+    { value: 'transportation',  label: '🚌 مواصلات (Transportation)' },
+    { value: 'travel_package',  label: '📦 باقة سياحية (Travel Package)' },
+    { value: 'room',            label: '🛏️ غرفة فندقية (Room)' },
+  ];
+
   // Mock data for charts (Will use this if backend doesn't provide historical data)
   const chartData = stats.historical_data || [
-    { name: 'Jan', revenue: 15000, bookings: 120 },
-    { name: 'Feb', revenue: 22000, bookings: 180 },
-    { name: 'Mar', revenue: 18000, bookings: 150 },
-    { name: 'Apr', revenue: 35000, bookings: 290 },
-    { name: 'May', revenue: 42000, bookings: 350 },
-    { name: 'Jun', revenue: 58000, bookings: 480 },
+    { name: 'May 19', revenue: 1200, bookings: 12 },
+    { name: 'May 20', revenue: 2200, bookings: 18 },
+    { name: 'May 21', revenue: 1800, bookings: 15 },
+    { name: 'May 22', revenue: 3500, bookings: 29 },
+    { name: 'May 23', revenue: 4200, bookings: 35 },
+    { name: 'May 24', revenue: 5800, bookings: 48 },
+    { name: 'May 25', revenue: 4500, bookings: 38 },
+    { name: 'May 26', revenue: 3000, bookings: 25 },
+    { name: 'May 27', revenue: 4800, bookings: 41 },
+    { name: 'May 28', revenue: 5100, bookings: 43 },
+    { name: 'May 29', revenue: 6200, bookings: 52 },
+    { name: 'May 30', revenue: 7500, bookings: 61 },
+    { name: 'May 31', revenue: 8000, bookings: 65 },
+    { name: 'Jun 01', revenue: 9500, bookings: 75 },
   ];
 
   const exportPDF = () => {
@@ -173,7 +224,17 @@ export default function DashboardPage() {
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-3xl font-bold text-slate-800">Dashboard Overview</h2>
+        <div className="flex items-center gap-4">
+          <h2 className="text-3xl font-bold text-slate-800">Dashboard Overview</h2>
+          {/* Live Indicator */}
+          <div className="flex items-center gap-2 bg-red-50 px-3 py-1.5 rounded-full border border-red-100">
+            <span className="relative flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+            </span>
+            <span className="text-red-600 text-xs font-black tracking-widest uppercase">Live</span>
+          </div>
+        </div>
         <div className="flex gap-3">
           <button onClick={exportExcel} className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg font-bold transition shadow-sm">
             <FileSpreadsheet size={20} /> Export Excel
@@ -184,54 +245,89 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {/* 3D Global Flights & Bookings Live Tracker */}
+      <div className="bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 rounded-3xl p-6 lg:p-8 mb-8 text-white relative overflow-hidden border border-slate-800 shadow-2xl flex flex-col lg:flex-row items-center justify-between gap-8">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/10 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none" />
+        
+        <div className="relative z-10 flex-1 max-w-xl text-right lg:text-left">
+          <div className="inline-flex items-center gap-2 bg-amber-500/20 text-amber-400 px-3 py-1.5 rounded-full border border-amber-500/30 mb-4 font-bold text-xs">
+            <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+            بث مباشر: تتبع الحجوزات والطيران ثلاثي الأبعاد
+          </div>
+          <h3 className="text-2xl lg:text-3xl font-black text-amber-500 tracking-wide mb-3">Kemet Live 3D Globe</h3>
+          <p className="text-slate-300 text-sm leading-relaxed mb-6 font-medium font-sans">
+            تتيح لك لوحة التحكم ثلاثية الأبعاد تتبع الرحلات الجوية والحجوزات السياحية القادمة إلى جمهورية مصر العربية (كيميت) من مختلف أنحاء العالم مباشرة على مجسم تفاعلي للكرة الأرضية.
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <div className="bg-white/5 border border-white/10 p-3 rounded-2xl">
+              <span className="block text-slate-400 text-xs font-semibold mb-1">مركز العمليات</span>
+              <span className="text-sm font-bold text-amber-500">القاهرة (Cairo)</span>
+            </div>
+            <div className="bg-white/5 border border-white/10 p-3 rounded-2xl">
+              <span className="block text-slate-400 text-xs font-semibold mb-1">مسارات الطيران النشطة</span>
+              <span className="text-sm font-bold text-sky-400">7 مسارات نشطة</span>
+            </div>
+            <div className="bg-white/5 border border-white/10 p-3 rounded-2xl col-span-2 sm:col-span-1">
+              <span className="block text-slate-400 text-xs font-semibold mb-1">حالة الشبكة 3D</span>
+              <span className="text-sm font-bold text-emerald-400">نشطة ومستقرة</span>
+            </div>
+          </div>
+        </div>
+        
+        <div className="relative z-10 shrink-0">
+          <ThreeGlobe size={300} />
+        </div>
+      </div>
+
       <div id="dashboard-content" className="bg-slate-50 p-4 -m-4 rounded-xl">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="bg-white p-6 rounded-xl shadow-sm flex items-center justify-between border border-slate-100">
-            <div>
+          <div className="bg-white p-6 rounded-xl shadow-sm flex items-center justify-between border border-slate-100 card-tilt-effect">
+            <div className="card-tilt-inner">
               <p className="text-sm text-slate-500 font-medium uppercase mb-1">Total Users</p>
               <h3 className="text-3xl font-bold text-slate-800">{stats.users}</h3>
             </div>
-            <div className="bg-blue-50 p-4 rounded-lg text-blue-500"><Users size={28} /></div>
+            <div className="bg-blue-50 p-4 rounded-lg text-blue-500 card-tilt-inner"><Users size={28} /></div>
           </div>
 
-          <div className="bg-white p-6 rounded-xl shadow-sm flex items-center justify-between border border-slate-100">
-            <div>
+          <div className="bg-white p-6 rounded-xl shadow-sm flex items-center justify-between border border-slate-100 card-tilt-effect">
+            <div className="card-tilt-inner">
               <p className="text-sm text-slate-500 font-medium uppercase mb-1">Total Bookings</p>
               <h3 className="text-3xl font-bold text-slate-800">{stats.bookings}</h3>
             </div>
-            <div className="bg-purple-50 p-4 rounded-lg text-purple-500"><Ticket size={28} /></div>
+            <div className="bg-purple-50 p-4 rounded-lg text-purple-500 card-tilt-inner"><Ticket size={28} /></div>
           </div>
 
-          <div className="bg-white p-6 rounded-xl shadow-sm flex items-center justify-between border border-slate-100">
-            <div>
+          <div className="bg-white p-6 rounded-xl shadow-sm flex items-center justify-between border border-slate-100 card-tilt-effect">
+            <div className="card-tilt-inner">
               <p className="text-sm text-slate-500 font-medium uppercase mb-1">Listed Hotels</p>
               <h3 className="text-3xl font-bold text-slate-800">{stats.hotels}</h3>
             </div>
-            <div className="bg-amber-50 p-4 rounded-lg text-amber-500"><Building2 size={28} /></div>
+            <div className="bg-amber-50 p-4 rounded-lg text-amber-500 card-tilt-inner"><Building2 size={28} /></div>
           </div>
 
-          <div className="bg-white p-6 rounded-xl shadow-sm flex items-center justify-between border border-slate-100">
-            <div>
+          <div className="bg-white p-6 rounded-xl shadow-sm flex items-center justify-between border border-slate-100 card-tilt-effect">
+            <div className="card-tilt-inner">
               <p className="text-sm text-slate-500 font-medium uppercase mb-1">Gross Revenue (Hotels/Tours)</p>
               <h3 className="text-3xl font-bold text-slate-800">{stats.revenue || 0} EGP</h3>
             </div>
-            <div className="bg-slate-50 p-4 rounded-lg text-slate-500"><DollarSign size={28} /></div>
+            <div className="bg-slate-50 p-4 rounded-lg text-slate-500 card-tilt-inner"><DollarSign size={28} /></div>
           </div>
 
-          <div className="bg-white p-6 rounded-xl shadow-sm flex items-center justify-between border-2 border-green-100">
-            <div>
+          <div className="bg-white p-6 rounded-xl shadow-sm flex items-center justify-between border-2 border-green-100 card-tilt-effect">
+            <div className="card-tilt-inner">
               <p className="text-sm text-green-600 font-bold uppercase mb-1">Your Net Profit (Kemet)</p>
               <h3 className="text-3xl font-black text-green-600">{stats.profit || 0} EGP</h3>
               <p className="text-xs text-slate-400 mt-1">Based on {stats.commission_rate || '15%'} platform commission</p>
             </div>
-            <div className="bg-green-100 p-4 rounded-lg text-green-600"><DollarSign size={28} /></div>
+            <div className="bg-green-100 p-4 rounded-lg text-green-600 card-tilt-inner"><DollarSign size={28} /></div>
           </div>
         </div>
 
         {/* Interactive Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
           <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-            <h3 className="text-xl font-bold text-slate-800 mb-6">📈 Revenue Trend (Last 6 Months)</h3>
+            <h3 className="text-xl font-bold text-slate-800 mb-6">📈 Revenue Trend (Last 14 Days)</h3>
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
@@ -311,14 +407,69 @@ export default function DashboardPage() {
 
         {/* Detailed Profits & Commission Splits Ledger */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 mt-8">
-          <div className="flex justify-between items-center mb-6">
+          {/* Ledger Header */}
+          <div className="flex justify-between items-center mb-5">
             <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
               🧾 سجل العمولات وتوزيع الأرباح المفصل (Commissions & Payouts Ledger)
             </h3>
             <span className="bg-amber-100 text-amber-700 py-1 px-3 rounded-full text-xs font-bold">15% vs 85% Split</span>
           </div>
 
-          {bookings && bookings.length > 0 ? (
+          {/* Search & Filter Bar */}
+          <div className="flex flex-wrap gap-3 items-center mb-5 p-4 bg-slate-50 rounded-xl border border-slate-100">
+            {/* Search Input */}
+            <div className="relative flex-1 min-w-[200px]">
+              <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              <input
+                type="text"
+                placeholder="ابحث باسم العميل، الخدمة، أو رقم الحجز..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-4 py-2 text-sm rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-300 text-right"
+              />
+            </div>
+
+            {/* Type Filter */}
+            <select
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value)}
+              className="px-3 py-2 text-sm rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-300 text-slate-700"
+            >
+              <option value="all">🏷️ كل الأنواع</option>
+              {ALL_SERVICE_TYPES.map((t) => (
+                <option key={t.value} value={t.value}>{t.label}</option>
+              ))}
+            </select>
+
+            {/* Status Filter */}
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value)}
+              className="px-3 py-2 text-sm rounded-lg border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-300 text-slate-700"
+            >
+              <option value="all">🔘 كل الحالات</option>
+              <option value="confirmed">✅ confirmed</option>
+              <option value="cancelled">❌ cancelled</option>
+              <option value="pending">⏳ pending</option>
+            </select>
+
+            {/* Results Count + Clear */}
+            <div className="flex items-center gap-2 ml-auto">
+              <span className="text-xs text-slate-500 font-medium">
+                {filteredBookings.length} / {bookings.length} نتيجة
+              </span>
+              {(searchQuery || filterType !== 'all' || filterStatus !== 'all') && (
+                <button
+                  onClick={() => { setSearchQuery(''); setFilterType('all'); setFilterStatus('all'); }}
+                  className="text-xs text-red-500 hover:text-red-700 font-bold border border-red-100 bg-red-50 px-3 py-1.5 rounded-lg transition"
+                >
+                  ✕ مسح الفلاتر
+                </button>
+              )}
+            </div>
+          </div>
+
+          {filteredBookings.length > 0 ? (
             <div className="overflow-x-auto rounded-lg border border-slate-100 shadow-inner">
               <table className="w-full text-right text-sm border-collapse table-auto">
                 <thead>
@@ -333,7 +484,7 @@ export default function DashboardPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50 bg-white">
-                  {bookings.map((booking) => {
+                  {filteredBookings.map((booking) => {
                     const total = parseFloat(booking.total_price || booking.price || 0);
                     const profit = parseFloat(booking.platform_profit || (total * 0.15).toFixed(2));
                     const partner = parseFloat(booking.partner_share || (total - profit).toFixed(2));
@@ -378,7 +529,20 @@ export default function DashboardPage() {
             </div>
           ) : (
             <div className="text-center py-10 bg-slate-50 rounded-lg border border-dashed border-slate-200">
-              <p className="text-slate-400 font-medium text-sm">لا توجد سجلات مالية مسجلة حالياً</p>
+              {bookings.length === 0 ? (
+                <p className="text-slate-400 font-medium text-sm">لا توجد سجلات مالية مسجلة حالياً</p>
+              ) : (
+                <div>
+                  <p className="text-slate-500 font-bold text-base mb-1">🔍 لا توجد نتائج مطابقة للبحث</p>
+                  <p className="text-slate-400 text-sm">جرب تغيير كلمة البحث أو الفلاتر المحددة</p>
+                  <button
+                    onClick={() => { setSearchQuery(''); setFilterType('all'); setFilterStatus('all'); }}
+                    className="mt-3 text-xs text-blue-500 hover:underline font-semibold"
+                  >
+                    مسح الفلاتر والعودة للكل
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>

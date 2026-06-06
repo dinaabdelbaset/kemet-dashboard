@@ -160,52 +160,54 @@ export default function HotelsPage() {
                 return (
                   <div
                     key={hotel.id}
-                    className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group"
+                    className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group card-tilt-effect transition-all duration-300"
                   >
-                    {/* Hotel image */}
-                    <div className="w-full h-48 bg-slate-100 overflow-hidden flex items-center justify-center">
-                      {imgSrc ? (
-                        <img
-                          src={imgSrc}
-                          alt={hotel.title || hotel.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).style.display = "none";
-                            (e.target as HTMLImageElement).nextElementSibling?.classList.remove("hidden");
-                          }}
-                        />
-                      ) : null}
-                      <div className={`flex flex-col items-center gap-2 text-slate-400 ${imgSrc ? "hidden" : ""}`}>
-                        <ImageOff size={32} />
-                        <span className="text-xs">No image</span>
+                    <div className="card-tilt-inner flex-1 flex flex-col">
+                      {/* Hotel image */}
+                      <div className="w-full h-48 bg-slate-100 overflow-hidden flex items-center justify-center">
+                        {imgSrc ? (
+                          <img
+                            src={imgSrc}
+                            alt={hotel.title || hotel.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).style.display = "none";
+                              (e.target as HTMLImageElement).nextElementSibling?.classList.remove("hidden");
+                            }}
+                          />
+                        ) : null}
+                        <div className={`flex flex-col items-center gap-2 text-slate-400 ${imgSrc ? "hidden" : ""}`}>
+                          <ImageOff size={32} />
+                          <span className="text-xs">No image</span>
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="p-5 flex-1 flex flex-col">
-                      <h3 className="font-bold text-lg text-slate-800 mb-1">{hotel.title || hotel.name}</h3>
-                      <p className="text-slate-500 text-sm mb-3 line-clamp-1">{hotel.location}</p>
-                      {hotel.rating && (
-                        <span className="inline-block px-2 py-1 bg-amber-50 text-amber-600 text-xs font-bold rounded-md mb-3 self-start">
-                          ★ {hotel.rating}
-                        </span>
-                      )}
-                      <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-100">
-                        <span className="font-bold text-amber-600">
-                          {hotel.price_starts_from || hotel.ticket_price || hotel.price_range_min || hotel.price} EGP
-                        </span>
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => openEditModal(hotel)}
-                            className="text-blue-500 hover:text-blue-700 bg-blue-50 p-2 rounded-lg transition border border-blue-100"
-                          >
-                            <Edit size={18} />
-                          </button>
-                          <button
-                            onClick={() => deleteHotel(hotel.id)}
-                            className="text-red-500 hover:text-red-700 bg-red-50 p-2 rounded-lg transition border border-red-100"
-                          >
-                            <Trash2 size={18} />
-                          </button>
+                      <div className="p-5 flex-1 flex flex-col">
+                        <h3 className="font-bold text-lg text-slate-800 mb-1">{hotel.title || hotel.name}</h3>
+                        <p className="text-slate-500 text-sm mb-3 line-clamp-1">{hotel.location}</p>
+                        {hotel.rating && (
+                          <span className="inline-block px-2 py-1 bg-amber-50 text-amber-600 text-xs font-bold rounded-md mb-3 self-start">
+                            ★ {hotel.rating}
+                          </span>
+                        )}
+                        <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-100">
+                          <span className="font-bold text-amber-600">
+                            {hotel.price_starts_from || hotel.ticket_price || hotel.price_range_min || hotel.price} EGP
+                          </span>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => openEditModal(hotel)}
+                              className="text-blue-500 hover:text-blue-700 bg-blue-50 p-2 rounded-lg transition border border-blue-100"
+                            >
+                              <Edit size={18} />
+                            </button>
+                            <button
+                              onClick={() => deleteHotel(hotel.id)}
+                              className="text-red-500 hover:text-red-700 bg-red-50 p-2 rounded-lg transition border border-red-100"
+                            >
+                              <Trash2 size={18} />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>

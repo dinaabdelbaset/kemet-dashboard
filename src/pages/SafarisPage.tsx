@@ -101,27 +101,29 @@ export default function SafarisPage() {
                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
          {locItems.map(safari=> (
-            <div key={safari.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group">
-               <img src={safari.image ? (safari.image.startsWith('/') ? (import.meta.env.VITE_FRONTEND_URL || 'http://localhost:5173') + safari.image : safari.image) : 'https://via.placeholder.com/400'} alt={safari.title || safari.name} className="w-full h-48 object-cover" />
-               <div className="p-5 flex-1 flex flex-col">
-                  <h3 className="font-bold text-lg text-slate-800 mb-1">{safari.title || safari.name}</h3>
-                  <p className="text-slate-500 text-sm mb-2 line-clamp-2" title={safari.location}>{safari.location}</p>
-                  
-                  {safari.duration && (
-                     <span className="inline-block px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-md mb-4 self-start">
-                        {safari.duration}
-                     </span>
-                  )}
-                  
-                  <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-100">
-                     <span className="font-bold text-amber-600">{safari.price} EGP</span>
-                     <div className="flex gap-2">
-                         <button onClick={() => openEditModal(safari)} className="text-blue-500 hover:text-blue-700 bg-blue-50 p-2 rounded-lg transition border border-blue-100">
-                            <Edit size={18} />
-                         </button>
-                         <button onClick={() => deleteSafari(safari.id)} className="text-red-500 hover:text-red-700 bg-red-50 p-2 rounded-lg transition border border-red-100">
-                            <Trash2 size={18} />
-                         </button>
+            <div key={safari.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group card-tilt-effect transition-all duration-300">
+               <div className="card-tilt-inner flex-1 flex flex-col">
+                  <img src={safari.image ? (safari.image.startsWith('/') ? (import.meta.env.VITE_FRONTEND_URL || 'http://localhost:5173') + safari.image : safari.image) : 'https://via.placeholder.com/400'} alt={safari.title || safari.name} className="w-full h-48 object-cover" />
+                  <div className="p-5 flex-1 flex flex-col">
+                     <h3 className="font-bold text-lg text-slate-800 mb-1">{safari.title || safari.name}</h3>
+                     <p className="text-slate-500 text-sm mb-2 line-clamp-2" title={safari.location}>{safari.location}</p>
+                     
+                     {safari.duration && (
+                        <span className="inline-block px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded-md mb-4 self-start">
+                           {safari.duration}
+                        </span>
+                     )}
+                     
+                     <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-100">
+                        <span className="font-bold text-amber-600">{safari.price} EGP</span>
+                        <div className="flex gap-2">
+                            <button onClick={() => openEditModal(safari)} className="text-blue-500 hover:text-blue-700 bg-blue-50 p-2 rounded-lg transition border border-blue-100">
+                               <Edit size={18} />
+                            </button>
+                            <button onClick={() => deleteSafari(safari.id)} className="text-red-500 hover:text-red-700 bg-red-50 p-2 rounded-lg transition border border-red-100">
+                               <Trash2 size={18} />
+                            </button>
+                        </div>
                      </div>
                   </div>
                </div>
@@ -180,6 +182,3 @@ export default function SafarisPage() {
     </div>
   );
 }
-
-
-

@@ -12,6 +12,12 @@ axiosClient.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
+  // Attach admin key for all /admin/* routes
+  if (config.url && config.url.startsWith("/admin")) {
+    config.headers["X-Admin-Key"] = import.meta.env.VITE_ADMIN_SECRET_KEY || "kemet-admin-2026-secret";
+  }
+
   return config;
 });
 

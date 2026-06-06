@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { useState } from 'react';
 import logoImg from './assets/logo.png';
 import DashboardPage from './pages/DashboardPage';
+import ThreePyramid from './components/ThreePyramid';
 // @ts-ignore
 import UsersPage from './pages/UsersPage';
 // @ts-ignore
@@ -42,10 +43,12 @@ import ChatbotPage from './pages/ChatbotPage';
 import ReportsPage from './pages/ReportsPage';
 // @ts-ignore
 import LiveChatPage from './pages/LiveChatPage';
+// @ts-ignore
+import OrdersPage from './pages/OrdersPage';
 import {
   Bed, Building2, Map, Utensils, Landmark, CarFront, Store, Ticket, Plane,
   Package, Compass, CalendarDays, ScrollText, Bell, MessageSquare,
-  Users, LayoutDashboard, Star, Tag, PieChart, Settings, Headset
+  Users, LayoutDashboard, Star, Tag, PieChart, Settings, Headset, ShoppingCart
 } from 'lucide-react';
 
 export default function App() {
@@ -78,48 +81,68 @@ export default function App() {
 
   if (!userRole) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-900 font-sans py-10">
-        <form onSubmit={handleLogin} className="bg-white p-8 rounded-2xl shadow-2xl w-[450px] space-y-6">
-          <div className="text-center flex flex-col items-center">
-            <div className="bg-white w-24 h-24 rounded-2xl flex items-center justify-center shadow-[0_8px_24px_rgba(212,175,55,0.25)] border-2 border-amber-500/20 p-2 mb-4">
-              <img src={logoImg} alt="Kemet Logo" className="w-full h-full object-contain" />
-            </div>
-            <h1 className="text-3xl font-black text-amber-500 tracking-wider mb-2">KEMET ADMIN</h1>
-            <p className="text-slate-500 text-sm font-medium">Log in to your vendor or admin dashboard</p>
-          </div>
-
-          {error && <div className="bg-red-50 text-red-500 p-3 rounded-xl text-center text-sm font-bold border border-red-100">{error}</div>}
-
-          <div className="space-y-4">
-            <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">Email Address</label>
-              <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:border-amber-500 focus:ring-4 focus:ring-amber-500/20 outline-none transition-all font-medium" placeholder="admin@kemat.com" required />
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">Password</label>
-              <input type="password" value={password} onChange={e => setPassword(e.target.value)} className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:border-amber-500 focus:ring-4 focus:ring-amber-500/20 outline-none transition-all font-medium" placeholder="••••••••" required />
+      <div className="flex min-h-screen items-center justify-center bg-slate-950 font-sans py-10 px-4">
+        <div className="flex flex-col md:flex-row bg-white rounded-3xl overflow-hidden shadow-2xl w-full max-w-4xl border border-slate-100">
+          
+          {/* Left Column: Premium 3D Golden Pyramid Showcase */}
+          <div className="md:w-1/2 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 p-8 flex flex-col items-center justify-center text-center relative overflow-hidden border-b md:border-b-0 md:border-r border-slate-800">
+            {/* Ambient glows */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-[80px]" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px]" />
+            
+            <div className="relative z-10 flex flex-col items-center">
+              <ThreePyramid size={250} />
+              
+              <h2 className="text-2xl font-black text-amber-500 tracking-widest mt-4 uppercase">Kemet Egypt</h2>
+              <p className="text-slate-400 text-xs max-w-xs mt-2 font-medium leading-relaxed">
+                Welcome back to Kemet Portal. Experience high-fidelity 3D and analytics in our unified administration dashboard.
+              </p>
             </div>
           </div>
 
-          <button type="submit" className="w-full bg-amber-500 hover:bg-amber-600 text-white font-black uppercase tracking-wider py-3.5 rounded-xl transition-all shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 hover:-translate-y-0.5">Sign In</button>
+          {/* Right Column: Form */}
+          <form onSubmit={handleLogin} className="md:w-1/2 p-8 md:p-10 space-y-6 flex flex-col justify-center bg-white">
+            <div className="text-center flex flex-col items-center">
+              <div className="bg-white w-20 h-20 rounded-2xl flex items-center justify-center shadow-[0_8px_24px_rgba(212,175,55,0.20)] border border-amber-500/20 p-2 mb-3">
+                <img src={logoImg} alt="Kemet Logo" className="w-full h-full object-contain" />
+              </div>
+              <h1 className="text-2xl font-black text-amber-500 tracking-wider mb-1">KEMET ADMIN</h1>
+              <p className="text-slate-500 text-xs font-medium">Log in to your vendor or admin dashboard</p>
+            </div>
 
-          <div className="mt-6 text-xs text-slate-500 bg-slate-50 p-4 rounded-xl border border-slate-100 h-48 overflow-y-auto">
-            <p className="font-bold text-slate-700 mb-2 uppercase tracking-wide sticky top-0 bg-slate-50 py-1">Demo Accounts (For Video)</p>
-            <ul className="space-y-2 font-medium">
-              <li className="flex justify-between items-center bg-white p-2 rounded border border-slate-100 shadow-sm"><span className="flex items-center gap-2">👑 <b>Super Admin</b></span> <span className="text-amber-600">admin@kemat.com</span></li>
-              <li className="flex justify-between items-center bg-white p-2 rounded border border-slate-100 shadow-sm"><span className="flex items-center gap-2">🏨 <b>Hotels</b></span> <span className="text-blue-600">hotel@kemat.com</span></li>
-              <li className="flex justify-between items-center bg-white p-2 rounded border border-slate-100 shadow-sm"><span className="flex items-center gap-2">🍽️ <b>Restaurants</b></span> <span className="text-orange-600">restaurant@kemat.com</span></li>
-              <li className="flex justify-between items-center bg-white p-2 rounded border border-slate-100 shadow-sm"><span className="flex items-center gap-2">🗺️ <b>Tours</b></span> <span className="text-green-600">tour@kemat.com</span></li>
-              <li className="flex justify-between items-center bg-white p-2 rounded border border-slate-100 shadow-sm"><span className="flex items-center gap-2">🏛️ <b>Museums</b></span> <span className="text-purple-600">museum@kemat.com</span></li>
-              <li className="flex justify-between items-center bg-white p-2 rounded border border-slate-100 shadow-sm"><span className="flex items-center gap-2">🚙 <b>Safaris</b></span> <span className="text-yellow-600">safari@kemat.com</span></li>
-              <li className="flex justify-between items-center bg-white p-2 rounded border border-slate-100 shadow-sm"><span className="flex items-center gap-2">🎉 <b>Events</b></span> <span className="text-pink-600">event@kemat.com</span></li>
-              <li className="flex justify-between items-center bg-white p-2 rounded border border-slate-100 shadow-sm"><span className="flex items-center gap-2">🛍️ <b>Bazaars</b></span> <span className="text-rose-600">bazaar@kemat.com</span></li>
-              <li className="flex justify-between items-center bg-white p-2 rounded border border-slate-100 shadow-sm"><span className="flex items-center gap-2">🚌 <b>Transport</b></span> <span className="text-indigo-600">transport@kemat.com</span></li>
-              <li className="flex justify-between items-center bg-white p-2 rounded border border-slate-100 shadow-sm"><span className="flex items-center gap-2">✈️ <b>Flights</b></span> <span className="text-sky-600">flight@kemat.com</span></li>
-            </ul>
-            <p className="mt-3 text-center border-t border-slate-200 pt-3 sticky bottom-0 bg-slate-50">Password for all: <strong>password123</strong></p>
-          </div>
-        </form>
+            {error && <div className="bg-red-50 text-red-500 p-2.5 rounded-xl text-center text-xs font-bold border border-red-100">{error}</div>}
+
+            <div className="space-y-3">
+              <div>
+                <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wide mb-1">Email Address</label>
+                <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 outline-none transition-all font-medium" placeholder="admin@kemat.com" required />
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold text-slate-700 uppercase tracking-wide mb-1">Password</label>
+                <input type="password" value={password} onChange={e => setPassword(e.target.value)} className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:border-amber-500 focus:ring-4 focus:ring-amber-500/15 outline-none transition-all font-medium" placeholder="••••••••" required />
+              </div>
+            </div>
+
+            <button type="submit" className="w-full bg-amber-500 hover:bg-amber-600 text-white font-black uppercase text-xs tracking-wider py-3 rounded-xl transition-all shadow-md shadow-amber-500/20 hover:shadow-amber-500/40 hover:-translate-y-0.5">Sign In</button>
+
+            <div className="mt-4 text-[11px] text-slate-500 bg-slate-50 p-3 rounded-xl border border-slate-100 h-36 overflow-y-auto">
+              <p className="font-bold text-slate-700 mb-1.5 uppercase tracking-wide sticky top-0 bg-slate-50 py-0.5">Demo Accounts</p>
+              <ul className="space-y-1.5 font-medium">
+                <li className="flex justify-between items-center bg-white p-1.5 rounded border border-slate-100 shadow-sm"><span>👑 <b>Super Admin</b></span> <span className="text-amber-600">admin@kemat.com</span></li>
+                <li className="flex justify-between items-center bg-white p-1.5 rounded border border-slate-100 shadow-sm"><span>🏨 <b>Hotels</b></span> <span className="text-blue-600">hotel@kemat.com</span></li>
+                <li className="flex justify-between items-center bg-white p-1.5 rounded border border-slate-100 shadow-sm"><span>🍽️ <b>Restaurants</b></span> <span className="text-orange-600">restaurant@kemat.com</span></li>
+                <li className="flex justify-between items-center bg-white p-1.5 rounded border border-slate-100 shadow-sm"><span>🗺️ <b>Tours</b></span> <span className="text-green-600">tour@kemat.com</span></li>
+                <li className="flex justify-between items-center bg-white p-1.5 rounded border border-slate-100 shadow-sm"><span>🏛️ <b>Museums</b></span> <span className="text-purple-600">museum@kemat.com</span></li>
+                <li className="flex justify-between items-center bg-white p-1.5 rounded border border-slate-100 shadow-sm"><span>🚙 <b>Safaris</b></span> <span className="text-yellow-600">safari@kemat.com</span></li>
+                <li className="flex justify-between items-center bg-white p-1.5 rounded border border-slate-100 shadow-sm"><span>🎉 <b>Events</b></span> <span className="text-pink-600">event@kemat.com</span></li>
+                <li className="flex justify-between items-center bg-white p-1.5 rounded border border-slate-100 shadow-sm"><span>🛍️ <b>Bazaars</b></span> <span className="text-rose-600">bazaar@kemat.com</span></li>
+                <li className="flex justify-between items-center bg-white p-1.5 rounded border border-slate-100 shadow-sm"><span>🚌 <b>Transport</b></span> <span className="text-indigo-600">transport@kemat.com</span></li>
+                <li className="flex justify-between items-center bg-white p-1.5 rounded border border-slate-100 shadow-sm"><span>✈️ <b>Flights</b></span> <span className="text-sky-600">flight@kemat.com</span></li>
+              </ul>
+              <p className="mt-2 text-center border-t border-slate-200 pt-2 sticky bottom-0 bg-slate-50">Password for all: <strong>password123</strong></p>
+            </div>
+          </form>
+        </div>
       </div>
     );
   }
@@ -167,6 +190,7 @@ export default function App() {
 
             <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest mt-6 mb-2 px-3">Business</p>
             <Link to="/bookings" className="flex items-center gap-3 px-3 py-2.5 text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 rounded-xl transition-all font-bold"><Ticket size={18} /> {userRole === 'superadmin' ? 'All Bookings' : 'My Bookings'}</Link>
+            <Link to="/orders" className="flex items-center gap-3 px-3 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-amber-400 rounded-xl transition-all font-medium"><ShoppingCart size={18} /> {userRole === 'superadmin' ? 'All Orders' : 'My Orders'}</Link>
             {userRole === 'superadmin' && <Link to="/users" className="flex items-center gap-3 px-3 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-amber-400 rounded-xl transition-all font-medium"><Users size={18} /> Users</Link>}
             <Link to="/reviews" className="flex items-center gap-3 px-3 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-amber-400 rounded-xl transition-all font-medium"><Star size={18} /> Reviews</Link>
             <Link to="/offers" className="flex items-center gap-3 px-3 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-amber-400 rounded-xl transition-all font-medium"><Tag size={18} /> Offers</Link>
@@ -206,6 +230,7 @@ export default function App() {
             <Route path="/" element={<DashboardPage />} />
             {userRole === 'superadmin' && <Route path="/users" element={<UsersPage />} />}
             <Route path="/bookings" element={<BookingsPage />} />
+            <Route path="/orders" element={<OrdersPage />} />
 
             {(userRole === 'superadmin' || userRole === 'hotel') && <Route path="/hotels" element={<HotelsPage />} />}
             {(userRole === 'superadmin' || userRole === 'hotel') && <Route path="/rooms" element={<RoomsPage />} />}

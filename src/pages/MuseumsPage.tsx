@@ -71,8 +71,7 @@ export default function MuseumsPage() {
     }
   };
 
-
-  const uniqueLocations = ['All', ...new Set(museums.map((item: any) => item.location).filter(Boolean))];
+  const uniqueLocations = ['All', 'Cairo', 'Giza', 'Alexandria', 'Luxor', 'Aswan', 'Sharm El-Sheikh', 'Hurghada', 'Marsa Alam', 'Marsa Matrouh', 'Port Said', 'Fayoum'];
   const filteredItems = selectedLocation === 'All' ? museums : museums.filter((item: any) => item.location === selectedLocation);
 
   const groupedItems = filteredItems.reduce((acc: any, item: any) => {
@@ -86,9 +85,29 @@ export default function MuseumsPage() {
     <div>
       <div className="flex justify-between items-center mb-8">
          <h2 className="text-3xl font-bold text-slate-800">Manage Museums</h2>
-         <button onClick={openAddModal} className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-bold transition">
-            <Plus size={20} /> Add New Museum
-         </button>
+         <div className="flex items-center gap-4">
+            <div className="relative">
+               <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-slate-400">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+               </div>
+               <select 
+                  value={selectedLocation}
+                  onChange={(e) => setSelectedLocation(e.target.value)}
+                  className="appearance-none bg-white border border-slate-200 rounded-lg pl-10 pr-10 py-2 outline-none focus:border-amber-500 font-bold text-slate-700 shadow-sm cursor-pointer min-w-[200px]"
+               >
+                  {uniqueLocations.map(loc => (
+                     <option key={loc} value={loc}>{loc === 'All' ? 'All Locations' : loc}</option>
+                  ))}
+               </select>
+               <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-500">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+               </div>
+            </div>
+
+            <button onClick={openAddModal} className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-bold transition">
+               <Plus size={20} /> Add New Museum
+            </button>
+         </div>
       </div>
 
       <div className="space-y-12">
@@ -102,8 +121,9 @@ export default function MuseumsPage() {
                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
          {locItems.map(museum=> (
-            <div key={museum.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group">
-               <img src={museum.image ? (museum.image.startsWith('/') ? (import.meta.env.VITE_FRONTEND_URL || 'http://localhost:5173') + museum.image : museum.image) : 'https://via.placeholder.com/400'} alt={museum.name} className="w-full h-48 object-cover" />
+            <div key={museum.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group card-tilt-effect transition-all duration-300">
+               <div className="card-tilt-inner flex-1 flex flex-col">
+                  <img src={museum.image ? (museum.image.startsWith('/') ? (import.meta.env.VITE_FRONTEND_URL || 'http://localhost:5173') + museum.image : museum.image) : 'https://via.placeholder.com/400'} alt={museum.name} className="w-full h-48 object-cover" />
                <div className="p-5 flex-1 flex flex-col">
                   <h3 className="font-bold text-lg text-slate-800 mb-1">{museum.name}</h3>
                   <p className="text-slate-500 text-sm mb-2 line-clamp-2" title={museum.location}>{museum.location}</p>
@@ -126,6 +146,7 @@ export default function MuseumsPage() {
                      </div>
                   </div>
                </div>
+            </div>
             </div>
          ))}
          
@@ -181,6 +202,3 @@ export default function MuseumsPage() {
     </div>
   );
 }
-
-
-

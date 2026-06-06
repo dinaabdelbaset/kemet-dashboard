@@ -57,7 +57,7 @@ export default function TransportationsPage() {
         await axiosClient.post(`/admin/transportations`, submitData, { headers: { 'Content-Type': 'multipart/form-data' } });
       }
       closeModal();
-      fetchTransportations();
+      fetchTransportation();
     } catch (err) {
       console.error(err);
       alert("Error saving transportation!");
@@ -102,51 +102,53 @@ export default function TransportationsPage() {
                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
          {locItems.map(transportation=> (
-            <div key={transportation.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group relative">
-               {/* Fixed missing image representation */}
-               <div className="w-full h-48 bg-slate-100 flex items-center justify-center relative overflow-hidden">
-                  {transportation.image ? (
-                     <img 
-                        src={transportation.image.startsWith('/') ? (import.meta.env.VITE_FRONTEND_URL || 'http://localhost:5173') + transportation.image : transportation.image} 
-                        alt={transportation.type} 
-                        className="w-full h-full object-cover" 
-                     />
-                  ) : (
-                     <div className="flex flex-col items-center justify-center text-slate-400">
-                        <span className="text-4xl">🚐</span>
-                        <span className="text-xs font-semibold mt-2 uppercase tracking-wide opacity-50">{transportation.type} Image Missing</span>
-                     </div>
-                  )}
-                  {/* Floating type badge */}
-                  <span className="absolute top-3 left-3 bg-slate-900 text-white text-xs px-3 py-1.5 rounded-full font-bold shadow-md">
-                     {transportation.type}
-                  </span>
-               </div>
-               
-               <div className="p-5 flex-1 flex flex-col">
-                  {/* Use route mapping instead of title */}
-                  <h3 className="font-bold text-lg text-slate-800 mb-1 leading-tight">{transportation.route}</h3>
-                  
-                  {/* Using company instead of location */}
-                  <p className="text-slate-500 text-sm mb-3 flex items-center gap-1.5">
-                     <span className="font-semibold text-slate-600">Operator:</span> {transportation.company || 'Unknown'}
-                  </p>
-                  
-                  {transportation.duration && (
-                     <span className="inline-block px-2.5 py-1 bg-amber-50 text-amber-700 text-xs font-bold rounded-md mb-4 self-start border border-amber-100">
-                        ⏱ {transportation.duration}
+            <div key={transportation.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group relative card-tilt-effect transition-all duration-300">
+               <div className="card-tilt-inner flex-1 flex flex-col">
+                  {/* Fixed missing image representation */}
+                  <div className="w-full h-48 bg-slate-100 flex items-center justify-center relative overflow-hidden">
+                     {transportation.image ? (
+                        <img 
+                           src={transportation.image.startsWith('/') ? (import.meta.env.VITE_FRONTEND_URL || 'http://localhost:5173') + transportation.image : transportation.image} 
+                           alt={transportation.type} 
+                           className="w-full h-full object-cover" 
+                        />
+                     ) : (
+                        <div className="flex flex-col items-center justify-center text-slate-400">
+                           <span className="text-4xl">🚐</span>
+                           <span className="text-xs font-semibold mt-2 uppercase tracking-wide opacity-50">{transportation.type} Image Missing</span>
+                        </div>
+                     )}
+                     {/* Floating type badge */}
+                     <span className="absolute top-3 left-3 bg-slate-900 text-white text-xs px-3 py-1.5 rounded-full font-bold shadow-md">
+                        {transportation.type}
                      </span>
-                  )}
+                  </div>
                   
-                  <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-100">
-                     <span className="font-bold text-amber-600 text-lg">{transportation.price} EGP</span>
-                     <div className="flex gap-2">
-                         <button onClick={() => openEditModal(transportation)} className="text-blue-500 hover:text-blue-700 bg-blue-50 p-2 rounded-lg transition border border-blue-100">
-                            <Edit size={18} />
-                         </button>
-                         <button onClick={() => deleteTransport(transportation.id)} className="text-red-500 hover:text-red-700 bg-red-50 p-2 rounded-lg transition border border-red-100">
-                            <Trash2 size={18} />
-                         </button>
+                  <div className="p-5 flex-1 flex flex-col">
+                     {/* Use route mapping instead of title */}
+                     <h3 className="font-bold text-lg text-slate-800 mb-1 leading-tight">{transportation.route}</h3>
+                     
+                     {/* Using company instead of location */}
+                     <p className="text-slate-500 text-sm mb-3 flex items-center gap-1.5">
+                        <span className="font-semibold text-slate-600">Operator:</span> {transportation.company || 'Unknown'}
+                     </p>
+                     
+                     {transportation.duration && (
+                        <span className="inline-block px-2.5 py-1 bg-amber-50 text-amber-700 text-xs font-bold rounded-md mb-4 self-start border border-amber-100">
+                           ⏱ {transportation.duration}
+                        </span>
+                     )}
+                     
+                     <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-100">
+                        <span className="font-bold text-amber-600 text-lg">{transportation.price} EGP</span>
+                        <div className="flex gap-2">
+                            <button onClick={() => openEditModal(transportation)} className="text-blue-500 hover:text-blue-700 bg-blue-50 p-2 rounded-lg transition border border-blue-100">
+                               <Edit size={18} />
+                            </button>
+                            <button onClick={() => deleteTransport(transportation.id)} className="text-red-500 hover:text-red-700 bg-red-50 p-2 rounded-lg transition border border-red-100">
+                               <Trash2 size={18} />
+                            </button>
+                        </div>
                      </div>
                   </div>
                </div>
@@ -210,6 +212,3 @@ export default function TransportationsPage() {
     </div>
   );
 }
-
-
-

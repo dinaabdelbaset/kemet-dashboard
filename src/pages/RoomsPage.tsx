@@ -106,25 +106,27 @@ export default function RoomsPage() {
                </div>
                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {hotelRooms.map((room: any) => (
-                     <div key={room.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group">
-                        <img src={room.image ? (room.image.startsWith('/') ? (import.meta.env.VITE_FRONTEND_URL || 'http://localhost:5173') + room.image : room.image) : 'https://via.placeholder.com/400'} alt={room.room_type} className="w-full h-48 object-cover" />
-                        <div className="p-5 flex-1 flex flex-col">
-                           <h3 className="font-bold text-lg text-slate-800 mb-1">{room.room_type}</h3>
-                           
-                           <div className="flex gap-4 text-sm text-slate-600 mb-4 mt-2 font-medium">
-                              <span className="flex items-center gap-1"><Bed size={16}/> {room.capacity_adults} Adults</span>
-                              <span>Qty: {room.available_count}</span>
-                           </div>
+                     <div key={room.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-slate-100 flex flex-col group card-tilt-effect transition-all duration-300">
+                        <div className="card-tilt-inner flex-1 flex flex-col">
+                           <img src={room.image ? (room.image.startsWith('/') ? (import.meta.env.VITE_FRONTEND_URL || 'http://localhost:5173') + room.image : room.image) : 'https://via.placeholder.com/400'} alt={room.room_type} className="w-full h-48 object-cover" />
+                           <div className="p-5 flex-1 flex flex-col">
+                              <h3 className="font-bold text-lg text-slate-800 mb-1">{room.room_type}</h3>
+                              
+                              <div className="flex gap-4 text-sm text-slate-600 mb-4 mt-2 font-medium">
+                                 <span className="flex items-center gap-1"><Bed size={16}/> {room.capacity_adults} Adults</span>
+                                 <span>Qty: {room.available_count}</span>
+                              </div>
 
-                           <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-100">
-                              <span className="font-bold text-amber-600">{room.price_per_night} EGP</span>
-                              <div className="flex gap-2">
-                                  <button onClick={() => openEditModal(room)} className="text-blue-500 bg-blue-50 p-2 rounded-lg transition border border-blue-100 hover:text-blue-700">
-                                     <Edit size={18} />
-                                  </button>
-                                  <button onClick={() => deleteRoom(room.id)} className="text-red-500 bg-red-50 p-2 rounded-lg transition border border-red-100 hover:text-red-700">
-                                     <Trash2 size={18} />
-                                  </button>
+                              <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-100">
+                                 <span className="font-bold text-amber-600">{room.price_per_night} EGP</span>
+                                 <div className="flex gap-2">
+                                     <button onClick={() => openEditModal(room)} className="text-blue-500 bg-blue-50 p-2 rounded-lg transition border border-blue-100 hover:text-blue-700">
+                                        <Edit size={18} />
+                                     </button>
+                                     <button onClick={() => deleteRoom(room.id)} className="text-red-500 bg-red-50 p-2 rounded-lg transition border border-red-100 hover:text-red-700">
+                                        <Trash2 size={18} />
+                                     </button>
+                                 </div>
                               </div>
                            </div>
                         </div>
@@ -174,12 +176,12 @@ export default function RoomsPage() {
                        <textarea required value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="Room description..." rows={3}></textarea>
                    </div>
                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Image (Upload or URL)</label>
-                        <div className="flex gap-2">
-                           <input type="file" accept="image/*" onChange={e => setFormData({...formData, image_file: e.target.files ? e.target.files[0] : null})} className="w-1/2 p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500 bg-white" />
-                           <input type="text" value={formData.image || ""} onChange={e => setFormData({...formData, image: e.target.value})} className="w-1/2 p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="Or paste image URL..." />
-                        </div>
-                    </div>
+                         <label className="block text-sm font-medium text-slate-700 mb-1">Image (Upload or URL)</label>
+                         <div className="flex gap-2">
+                            <input type="file" accept="image/*" onChange={e => setFormData({...formData, image_file: e.target.files ? e.target.files[0] : null})} className="w-1/2 p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500 bg-white" />
+                            <input type="text" value={formData.image || ""} onChange={e => setFormData({...formData, image: e.target.value})} className="w-1/2 p-2 border border-slate-200 rounded-lg outline-none focus:border-amber-500" placeholder="Or paste image URL..." />
+                         </div>
+                     </div>
                    <div className="mt-4 flex justify-end gap-3 pt-4 border-t border-slate-100">
                        <button type="button" onClick={closeModal} className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium transition">Cancel</button>
                        <button type="submit" className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-bold transition">Save Room</button>
@@ -191,6 +193,3 @@ export default function RoomsPage() {
     </div>
   );
 }
-
-
-
