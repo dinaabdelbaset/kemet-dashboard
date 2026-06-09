@@ -15,6 +15,8 @@ export default function DashboardPage() {
   const [filterType, setFilterType] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
 
+  const [error, setError] = useState<string | null>(null);
+
   const fetchData = () => {
     Promise.all([
       axiosClient.get("/admin/stats"),
@@ -22,23 +24,39 @@ export default function DashboardPage() {
     ]).then(([statsRes, bookingsRes]) => {
       setStats(statsRes.data);
       setBookings(bookingsRes.data);
+      setError(null);
     }).catch(err => {
       console.error("Error loading dashboard data:", err);
+      setError("تعذّر الاتصال بالـ Backend. تأكد من تشغيل: php artisan serve");
     });
   };
 
   useEffect(() => {
-    fetchData(); // Initial fetch
-    
-    // Set up live auto-polling every 5 seconds for the presentation
+    fetchData();
     const interval = setInterval(() => {
       fetchData();
     }, 5000);
-
-    return () => clearInterval(interval); // Cleanup on unmount
+    return () => clearInterval(interval);
   }, []);
 
-  if (!stats) return <p>Loading state...</p>;
+  if (error) return (
+    <div className="flex flex-col items-center justify-center h-96 gap-4">
+      <div className="text-6xl">⚠️</div>
+      <h3 className="text-xl font-bold text-slate-700">البيكند غير متصل</h3>
+      <p className="text-slate-500 text-sm">{error}</p>
+      <code className="bg-slate-100 px-4 py-2 rounded-lg text-sm font-mono text-slate-700">php artisan serve</code>
+      <button onClick={fetchData} className="bg-amber-500 hover:bg-amber-600 text-white px-6 py-2 rounded-lg font-bold transition">إعادة المحاولة</button>
+    </div>
+  );
+
+  if (!stats) return (
+    <div className="flex items-center justify-center h-96">
+      <div className="text-center">
+        <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <p className="text-slate-500">جاري تحميل البيانات...</p>
+      </div>
+    </div>
+  );
 
   // Derived filtered bookings
   const filteredBookings = bookings.filter((b) => {

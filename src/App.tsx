@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { useState } from 'react';
-import logoImg from './assets/logo.png';
+
 import DashboardPage from './pages/DashboardPage';
 import ThreePyramid from './components/ThreePyramid';
 // @ts-ignore
@@ -45,10 +45,17 @@ import ReportsPage from './pages/ReportsPage';
 import LiveChatPage from './pages/LiveChatPage';
 // @ts-ignore
 import OrdersPage from './pages/OrdersPage';
+// @ts-ignore
+import EmergencyServicesPage from './pages/EmergencyServicesPage';
+// @ts-ignore
+import ArabTourismPage from './pages/ArabTourismPage';
+// @ts-ignore
+import HajjUmrahPage from './pages/HajjUmrahPage';
 import {
   Bed, Building2, Map, Utensils, Landmark, CarFront, Store, Ticket, Plane,
   Package, Compass, CalendarDays, ScrollText, Bell, MessageSquare,
-  Users, LayoutDashboard, Star, Tag, PieChart, Settings, Headset, ShoppingCart
+  Users, LayoutDashboard, Star, Tag, PieChart, Settings, Headset, ShoppingCart,
+  Phone, Globe, Moon
 } from 'lucide-react';
 
 export default function App() {
@@ -103,8 +110,8 @@ export default function App() {
           {/* Right Column: Form */}
           <form onSubmit={handleLogin} className="md:w-1/2 p-8 md:p-10 space-y-6 flex flex-col justify-center bg-white">
             <div className="text-center flex flex-col items-center">
-              <div className="bg-white w-20 h-20 rounded-2xl flex items-center justify-center shadow-[0_8px_24px_rgba(212,175,55,0.20)] border border-amber-500/20 p-2 mb-3">
-                <img src={logoImg} alt="Kemet Logo" className="w-full h-full object-contain" />
+              <div className="bg-white w-20 h-20 rounded-2xl flex items-center justify-center shadow-[0_8px_24px_rgba(212,175,55,0.20)] border border-amber-500/20 mb-3">
+                <svg viewBox="0 0 60 60" className="w-12 h-12" fill="none" xmlns="http://www.w3.org/2000/svg"><polygon points="30,5 55,50 5,50" fill="#f59e0b" stroke="#d97706" strokeWidth="1.5"/><polygon points="30,18 45,50 15,50" fill="#d97706" opacity="0.5"/></svg>
               </div>
               <h1 className="text-2xl font-black text-amber-500 tracking-wider mb-1">KEMET ADMIN</h1>
               <p className="text-slate-500 text-xs font-medium">Log in to your vendor or admin dashboard</p>
@@ -155,8 +162,8 @@ export default function App() {
         <aside className="w-64 bg-slate-900 text-white flex flex-col overflow-y-auto shadow-2xl z-10 border-r border-slate-800 scrollbar-thin scrollbar-thumb-slate-700">
           <div className="p-6 pb-2">
             <div className="flex items-center gap-3">
-              <div className="bg-white w-12 h-12 rounded-xl flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.5)] border border-amber-500/30 p-1 shrink-0">
-                <img src={logoImg} alt="Kemet Logo" className="w-full h-full object-contain" />
+              <div className="bg-white w-12 h-12 rounded-xl flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.5)] border border-amber-500/30 shrink-0">
+                <svg viewBox="0 0 60 60" className="w-8 h-8" fill="none" xmlns="http://www.w3.org/2000/svg"><polygon points="30,5 55,50 5,50" fill="#f59e0b" stroke="#d97706" strokeWidth="1.5"/><polygon points="30,18 45,50 15,50" fill="#d97706" opacity="0.5"/></svg>
               </div>
               <h1 className="text-[20px] font-black text-amber-500 tracking-widest leading-tight">KEMET<br /><span className="text-[12px] text-white/80 tracking-[0.2em]">ADMIN</span></h1>
             </div>
@@ -179,12 +186,15 @@ export default function App() {
             {(userRole === 'superadmin' || userRole === 'transport') && <Link to="/transportations" className="flex items-center gap-3 px-3 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-amber-400 rounded-xl transition-all font-medium"><CarFront size={18} /> {userRole === 'transport' ? 'My Fleet' : 'Transportation'}</Link>}
             {(userRole === 'superadmin' || userRole === 'flight') && <Link to="/flights" className="flex items-center gap-3 px-3 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-amber-400 rounded-xl transition-all font-medium"><Plane size={18} /> {userRole === 'flight' ? 'My Flights' : 'Flights'}</Link>}
             {(userRole === 'superadmin' || userRole === 'bazaar') && <Link to="/bazaars" className="flex items-center gap-3 px-3 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-amber-400 rounded-xl transition-all font-medium"><Store size={18} /> {userRole === 'bazaar' ? 'My Bazaar' : 'Bazaars / Souqs'}</Link>}
+            {userRole === 'superadmin' && <Link to="/arab-tourism" className="flex items-center gap-3 px-3 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-amber-400 rounded-xl transition-all font-medium"><Globe size={18} /> Arab Tourism</Link>}
+            {userRole === 'superadmin' && <Link to="/emergency" className="flex items-center gap-3 px-3 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-amber-400 rounded-xl transition-all font-medium"><Phone size={18} /> Emergency Services</Link>}
 
             {(userRole === 'superadmin' || ['tour', 'safari', 'event'].includes(userRole)) && (
               <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest mt-6 mb-2 px-3">Trips & Packages</p>
             )}
             {(userRole === 'superadmin' || userRole === 'tour') && <Link to="/tours" className="flex items-center gap-3 px-3 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-amber-400 rounded-xl transition-all font-medium"><Map size={18} /> {userRole === 'tour' ? 'My Tours' : 'One Day Tours'}</Link>}
             {userRole === 'superadmin' && <Link to="/travelpackages" className="flex items-center gap-3 px-3 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-amber-400 rounded-xl transition-all font-medium"><Package size={18} /> Packages</Link>}
+            {userRole === 'superadmin' && <Link to="/hajj-umrah" className="flex items-center gap-3 px-3 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-amber-400 rounded-xl transition-all font-medium"><Moon size={18} /> Hajj & Umrah</Link>}
             {(userRole === 'superadmin' || userRole === 'safari') && <Link to="/safaris" className="flex items-center gap-3 px-3 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-amber-400 rounded-xl transition-all font-medium"><Compass size={18} /> {userRole === 'safari' ? 'My Safaris' : 'Safari'}</Link>}
             {(userRole === 'superadmin' || userRole === 'event') && <Link to="/events" className="flex items-center gap-3 px-3 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-amber-400 rounded-xl transition-all font-medium"><CalendarDays size={18} /> {userRole === 'event' ? 'My Events' : 'Events / Festivals'}</Link>}
 
@@ -244,6 +254,9 @@ export default function App() {
             {(userRole === 'superadmin' || userRole === 'flight') && <Route path="/flights" element={<FlightsPage />} />}
 
             {userRole === 'superadmin' && <Route path="/travelpackages" element={<TravelPackagesPage />} />}
+            {userRole === 'superadmin' && <Route path="/emergency" element={<EmergencyServicesPage />} />}
+            {userRole === 'superadmin' && <Route path="/arab-tourism" element={<ArabTourismPage />} />}
+            {userRole === 'superadmin' && <Route path="/hajj-umrah" element={<HajjUmrahPage />} />}
             <Route path="/reviews" element={<ReviewsPage />} />
             <Route path="/offers" element={<OffersPage userRole={userRole} />} />
 
